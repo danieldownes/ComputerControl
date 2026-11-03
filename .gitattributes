@@ -1,0 +1,18 @@
+* text=auto
+
+# Preserve the original CP437 bytes, CRLF line endings, and binary artifacts.
+"CC beta 5 stuff/**" -text
+Poster/** -text
+*.BAS -text linguist-language=QuickBASIC
+*.bas -text linguist-language=QuickBASIC
+
+# Generated browser bundles should not obscure the original source language.
+html5/dist/computer-control.html linguist-generated=true
+html5/dist/legacy-data.js linguist-generated=true
+docs/index.html linguist-generated=true
+*.bmp binary
+*.png binary
+*.gif binary
+*.exe binary
+*.EXE binary
+*.zip binary

@@ -1,0 +1,13 @@
+# Local browser/build state and unrelated hosting configuration.
+**/node_modules/
+**/.qa/
+**/.openai/
+**/.sites-runtime/
+**/.sites-checkout*/
+Thumbs.db
+.DS_Store
+__pycache__/
+*.pyc
+/*.zip
+/*.tar.gz
+.archive-work/

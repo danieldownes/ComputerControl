@@ -1,0 +1,11 @@
+{
+  "name": "computer-control-html5",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test tests/core.test.mjs",
+    "build": "node scripts/build-standalone.mjs"
+  }
+}

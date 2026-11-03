@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Computer Control beta 5, faithfully recreated at 640×480 with its original VGA bitmap font and a live emulated LPT pinout.">
+  <title>Computer Control · LPT Emulator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="legacy-data.js" defer></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="app-header"><a class="wordmark" href="./">Computer Control <span>b5</span></a><span class="header-note">HTML5 conversion · virtual hardware</span><button id="about-button" type="button">About</button></header>
+  <main>
+    <section class="program" aria-label="Original DOS program">
+      <div class="section-heading"><h1>Original program</h1><span>640 × 480 · VGA · CP437</span></div>
+      <div id="screen-viewport"><canvas id="screen" width="640" height="480" tabindex="0" aria-label="Computer Control DOS interface. Q W E R T Y U I toggle output bits. P plays, C records, S stops, G opens groups, D opens scheduler, O opens options, H opens help. Click to focus." role="application">Computer Control requires a browser with HTML5 canvas support.</canvas><div class="focus-caption">Click the screen to use the original keyboard controls</div></div>
+      <div class="program-controls">
+        <button id="play-button" type="button">▶ Play <kbd>P</kbd></button><button id="record-button" type="button">● Record <kbd>C</kbd></button><button id="stop-button" type="button">■ Stop <kbd>S</kbd></button><button id="home-button" type="button">Main screen</button>
+        <label class="speed-label">Speed <select id="speed"><option value="1">1×</option><option value="2">2×</option><option value="10">10×</option></select></label>
+      </div>
+      <div class="file-controls"><label for="sample">Original examples</label><select id="sample"><option>eg1.rec</option><option>eg2.rec</option><option>eg3.rec</option></select><button id="load-sample" type="button">Load</button><button id="import-recording" type="button">Open .rec</button><button id="export-recording" type="button">Save .rec</button><button id="edit-sequence" type="button">Edit sequence</button></div>
+      <div id="transport-status" role="status" aria-live="polite">Ready. Select an example or open a recording.</div>
+      <div class="output-access" aria-label="Output keyboard controls" id="output-keys"></div>
+      <div class="support-controls"><button id="groups-button" type="button">Groups <kbd>G</kbd></button><button id="schedule-button" type="button">Scheduler <kbd>D</kbd></button><button id="options-button" type="button">Options <kbd>O</kbd></button><button id="help-button" type="button">Help <kbd>H</kbd></button></div>
+      <p class="screen-note">The screen retains its original pixel layout. On smaller displays, only its viewing scale changes.</p>
+    </section>
+    <aside class="inspector" aria-label="Emulated parallel port">
+      <div class="section-heading"><h2>Parallel port</h2><select id="port-select" aria-label="Emulated LPT port"><option value="0">LPT1 · 0x378</option><option value="1">LPT2 · 0x278</option><option value="2">LPT3 · 0x3BC</option></select></div>
+      <div class="connector-label">DB-25 female · looking into the PC socket</div>
+      <div class="connector" aria-label="DB-25 parallel connector"><div class="pin-row" id="pins-top"></div><div class="pin-row" id="pins-bottom"></div></div>
+      <div class="pin-legend"><span><i class="high-dot"></i>HIGH</span><span><i class="low-dot"></i>LOW</span><span><i class="ground-dot"></i>Ground</span></div>
+      <div id="selected-pin" role="status">Select a pin to inspect its signal.</div>
+      <div class="registers"><div>DATA <span id="data-address">0x378</span><output id="data-register">0x00</output></div><div>STATUS <span id="status-address">0x379</span><output id="status-register">0x78</output></div><div>CONTROL <span id="control-address">0x37A</span><output id="control-register">0x04</output></div></div>
+      <form id="byte-form" class="byte-form"><label for="output-byte">Output byte</label><input id="output-byte" type="number" min="0" max="255" step="1" value="0" required><button type="submit">Set</button><output id="binary-byte">00000000</output></form>
+      <h3>Output signals</h3><div class="signal-list" id="output-signals"></div>
+      <h3>Virtual input switches</h3><div class="input-switches" id="input-switches"></div>
+      <p class="inspector-note">A closed switch pulls its pin LOW. The original input monitor reads pins 11, 10, 12, 13, 17, 16, 14, 1. Pin 15 is visible here and ignored by that monitor.</p>
+      <details class="groups-details"><summary>Group banks · keys 0–9</summary><div id="group-banks"></div><div class="small-actions"><button id="import-groups" type="button">Open .gro</button><button id="export-groups" type="button">Save .gro</button></div></details>
+    </aside>
+  </main>
+  <footer>Original program by Daniel Vincent · Browser port preserves the supplied source and artwork. <span>No physical port is connected.</span></footer>
+  <input id="recording-file" type="file" accept=".rec,.seq,.txt" hidden><input id="groups-file" type="file" accept=".gro,.txt" hidden>
+  <dialog id="sequence-dialog"><form method="dialog" class="dialog-top"><h2>Recorded sequence</h2><button aria-label="Close sequence editor">×</button></form><form id="sequence-form"><label for="sequence-name">File name</label><input id="sequence-name" value="sequence.rec" maxlength="100" required><label for="sequence-text">Output byte, delay in seconds</label><textarea id="sequence-text" rows="11" spellcheck="false" required></textarea><p class="dialog-hint">Each row sets the output, then waits. A final delay of 888 stops playback.</p><div id="sequence-error" role="alert"></div><button type="submit" class="primary">Use sequence</button></form></dialog>
+  <dialog id="schedule-dialog"><form method="dialog" class="dialog-top"><h2>Scheduler</h2><button aria-label="Close scheduler">×</button></form><p class="dialog-hint">Runs while this page is open. A missed time during this session runs when the page becomes active again. Saved schedules from previous sessions remain paused until re-enabled.</p><div id="schedule-list"></div><form id="schedule-form"><label for="schedule-time">Date and time</label><input id="schedule-time" type="datetime-local" step="1" required><label for="schedule-recording">Recording</label><select id="schedule-recording" required></select><button class="primary" type="submit">Add schedule</button><div id="schedule-error" role="alert"></div></form></dialog>
+  <dialog id="about-dialog"><form method="dialog" class="dialog-top"><h2>Computer Control beta 5</h2><button aria-label="Close about">×</button></form><p>A browser conversion of Daniel Vincent’s QBASIC parallel-port controller. The program is drawn into a fixed 640×480 framebuffer with 8×16 IBM VGA bitmap characters, the original CP437 box drawing, and the supplied screen text.</p><p>The pinout emulates digital logic, including inverted status/control bits. Its control pins model released, open-collector lines. This is a software simulation.</p><p>Files, group banks, settings, and recordings stay in this browser. Export .rec and .gro files to keep a separate copy.</p><p>The supplied source differs from the released executable. Register initialization, group-bank 4, timing, configuration saving, and scheduler-slot errors are corrected in the port.</p><p>DOS executable plug-ins are outside the browser conversion; the Plugins screen supplies a virtual input/output demonstration.</p><p><a href="assets/original-screen.png" target="_blank" rel="noopener">Original screenshot</a> · <a href="assets/original-wiring.png" target="_blank" rel="noopener">Original wiring diagram</a> · <a href="https://github.com/viler-int10h/vga-text-mode-fonts" target="_blank" rel="noopener">VGA font archive by VileR</a></p></dialog>
+  <noscript>This conversion needs JavaScript enabled.</noscript>
+</body>
+</html>

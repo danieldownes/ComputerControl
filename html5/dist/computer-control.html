@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Computer Control beta 5, faithfully recreated at 640×480 with its original VGA bitmap font and a live emulated LPT pinout.">
+  <title>Computer Control · LPT Emulator</title>
+  <style>
+:root{color-scheme:dark;--bg:#141918;--panel:#1c2321;--line:#3a4540;--text:#d9e1da;--muted:#a1afa6;--green:#a6d5ad;--active:#214b30;font:14px/1.5 system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit;color:inherit}button,select,input,textarea{background:#222d26;border:1px solid #4b5d50;border-radius:4px;padding:7px 10px}button{cursor:pointer}button:hover{background:#304335}button:disabled{cursor:default;opacity:.45}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #bdedc3;outline-offset:3px}a{color:var(--green)}kbd{font:11px monospace;color:var(--muted);margin-left:7px}.app-header{max-width:1152px;margin:auto;display:flex;align-items:center;gap:16px;padding:18px 24px;border-bottom:1px solid var(--line)}.wordmark{color:var(--text);text-decoration:none;font-size:18px;font-weight:500;letter-spacing:-.3px}.wordmark span{font:12px monospace;color:var(--green);margin-left:6px}.header-note{color:var(--muted);font-size:12px;flex:1}.app-header button{font-size:12px}main{max-width:1152px;margin:0 auto;display:grid;grid-template-columns:640px minmax(290px,1fr);gap:32px;padding:24px}.program,.inspector{min-width:0}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px;margin-bottom:12px}.section-heading h1,.section-heading h2{font-size:14px;font-weight:500;margin:0}.section-heading span{font:12px monospace;color:var(--muted)}.section-heading select{font-size:12px;max-width:175px;padding:5px}#screen-viewport{position:relative;width:640px;max-width:100%;background:#000}#screen{display:block;width:640px;height:480px;image-rendering:pixelated;image-rendering:crisp-edges;outline:1px solid #424d45;touch-action:manipulation}#screen:focus{outline:2px solid #819d86}.focus-caption{position:absolute;inset:auto 0 0;text-align:center;padding:4px;background:#17251ee8;color:#d4e2d6;font-size:11px;pointer-events:none;opacity:0;transition:opacity .15s}#screen-viewport:hover .focus-caption{opacity:1}#screen-viewport:focus-within .focus-caption{opacity:0}.program-controls,.file-controls,.support-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:14px}.program-controls button{font-size:13px}.speed-label{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);margin-left:auto}.speed-label select{padding:5px}.file-controls{padding-top:14px;border-top:1px solid var(--line);font-size:12px}.file-controls select{width:95px}.file-controls button{padding:6px 8px}#transport-status{font-size:12px;min-height:36px;color:var(--green);padding:12px 0 6px}.output-access{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}.output-access button{padding:6px 0;font:12px monospace;background:var(--panel)}.output-access button[aria-pressed=true]{background:var(--active);color:#c8f7cf}.output-access small{display:block;font:10px system-ui;color:var(--muted);margin-top:3px}.support-controls button{font-size:12px;padding:6px 9px}.screen-note,.inspector-note{font-size:12px;color:var(--muted);margin:14px 0}.connector-label{font-size:11px;color:var(--muted);margin:15px 0 8px}.connector{background:#333f36;padding:13px 8px;border:2px solid #6a7d68;border-radius:23px 23px 35px 35px}.pin-row{display:grid;grid-template-columns:repeat(13,minmax(0,1fr));gap:1px;direction:rtl}.pin-row+.pin-row{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:7px;padding:0 8px}.pin{border:0;border-radius:0;background:transparent;padding:0;min-width:0;position:relative;display:flex;flex-direction:column;align-items:center;font:10px monospace;color:#d2dfd2}.pin:hover{background:#536951}.pin i,.pin-legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin:3px auto;background:#51624e;border:1px solid #a1af92}.pin[data-level=H] i,.high-dot{background:#7de297!important}.pin[data-role=ground] i,.ground-dot{background:#b9c8b0!important}.low-dot{background:#51624e!important}.pin-legend{display:flex;gap:15px;font-size:11px;color:var(--muted);margin:11px 0}.pin-legend span{display:flex;align-items:center;gap:5px}.pin-legend i{width:8px;height:8px;margin:0}#selected-pin{min-height:48px;font-size:12px;color:var(--text);padding-bottom:10px;border-bottom:1px solid var(--line)}.registers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:16px 0;font-size:10px;color:var(--muted)}.registers span{display:block;font:11px monospace}.registers output{font:22px/1.6 monospace;display:block;color:var(--text)}.byte-form{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:12px 0 20px;font-size:12px}.byte-form input{width:68px;padding:5px}.byte-form button{padding:5px 9px}.byte-form output{font:13px monospace;color:var(--green);margin-left:auto}h3{font-size:12px;font-weight:500;margin:19px 0 10px}.signal-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.signal{font:11px/1.7 monospace;border-bottom:1px solid var(--line);padding:6px 3px}.signal strong{display:block;font-weight:400}.signal[data-on=true]{background:var(--active)}.input-switches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.switch{padding:6px;font-size:11px;text-align:left}.switch span{display:block;color:var(--muted);font-size:10px}.switch[aria-pressed=true]{background:var(--active)}.groups-details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px;font-size:12px}summary{cursor:pointer}#group-banks{margin:12px 0;display:grid;grid-template-columns:1fr 1fr;gap:6px}.group-bank{display:flex;align-items:center;gap:5px}.group-bank output{font:12px monospace;flex:1}.group-bank button{font-size:11px;padding:4px 6px}.small-actions{display:flex;gap:8px}.small-actions button{font-size:12px}footer{max-width:1152px;margin:0 auto;padding:18px 24px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}footer span{white-space:nowrap}dialog{color:var(--text);background:var(--panel);border:1px solid #5d7162;border-radius:8px;padding:22px;width:500px;max-width:calc(100vw - 28px);max-height:90vh}dialog::backdrop{background:#000a}.dialog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.dialog-top h2{margin:0;font-size:17px;font-weight:500}.dialog-top button{border:none;background:transparent;font-size:22px;padding:0 5px}dialog label{display:block;font-size:12px;margin:14px 0 5px}dialog input,dialog select,dialog textarea{width:100%}dialog textarea{font:14px/1.5 monospace;resize:vertical}dialog p{font-size:13px}.dialog-hint{font-size:12px!important;color:var(--muted)}.primary{background:#35633d;margin-top:15px}#sequence-error,#schedule-error{color:#ffb9a5;font-size:12px;margin-top:10px}.schedule-row{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--line)}.schedule-row div{flex:1}.schedule-row button{font-size:11px;padding:4px 6px}#schedule-list{margin-top:18px}#record-button[data-active=true]{background:#673331}body[data-recording=true] #record-button{color:#ffb7a4}button[aria-pressed=true]{border-color:#8fb496}
+@media(max-width:1050px){main{grid-template-columns:minmax(0,1fr);max-width:688px}.inspector{margin-top:12px;padding-top:24px;border-top:1px solid var(--line)}.connector{max-width:440px}.signal-list{grid-template-columns:repeat(8,minmax(0,1fr))}.input-switches{grid-template-columns:repeat(5,minmax(0,1fr))}.registers{max-width:400px}.inspector .byte-form{max-width:440px}.app-header{padding:14px 20px}}
+@media(max-width:680px){main{padding:18px 12px}.header-note{display:none}.app-header{padding:12px}.app-header .wordmark{flex:1}.section-heading span{font-size:10px}.program-controls{gap:6px}.program-controls button{font-size:12px;padding:6px}.program-controls kbd{display:none}.file-controls{gap:6px}.file-controls label{width:100%}.speed-label{margin-left:0}.output-access{grid-template-columns:repeat(4,minmax(0,1fr))}.signal-list{grid-template-columns:repeat(4,minmax(0,1fr))}.input-switches{grid-template-columns:repeat(3,minmax(0,1fr))}.output-access small{font-size:11px}footer{padding:18px 12px}.support-controls kbd{display:none}}
+@media(pointer:coarse){button:not(.pin){min-height:44px}input,select,textarea{font-size:16px}.pin{min-height:44px}.connector{padding-top:8px;padding-bottom:8px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+</style>
+  <script>
+/* Generated from the original CP437 source and files. */
+window.CC_LEGACY = {"font": "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AAB4zMzM2MzGxsbMAAAAAAAA/sbGwMDAwMDAwAAAAAAAAAAA/mxsbGxsbGwAAAAAAAAA/sZgMBgwYMb+AAAAAAAAAAAAftjY2NjYcAAAAAAAAAAAZmZmZmZ8YGDAAAAAAAAAAHbcGBgYGBgYAAAAAAAAAH4YPGZmZjwYfgAAAAAAAAA4bMbG/sbGbDgAAAAAAAA4bMbGxmxsbGzuAAAAAAAAHjAYDD5mZmZmPAAAAAAAAAAAAH7b29t+AAAAAAAAAAAAAwZ+29vzfmDAAAAAAAAAHDBgYHxgYGAwHAAAAAAAAAB8xsbGxsbGxsYAAAAAAAAAAP4AAP4AAP4AAAAAAAAAAAAYGH4YGAAA/wAAAAAAAAAwGAwGDBgwAH4AAAAAAAAADBgwYDAYDAB+AAAAAAAADhsbGBgYGBgYGBgYGBgYGBgYGBgYGNjY2HAAAAAAAAAAABgYAH4AGBgAAAAAAAAAAAAAdtwAdtwAAAAAAAAAOGxsOAAAAAAAAAAAAAAAAAAAAAAAABgYAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAADwwMDAwM7GxsPBwAAAAAANhsbGxsbAAAAAAAAAAAAABw2DBgyPgAAAAAAAAAAAAAAAAAfHx8fHx8fAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==", "characters": "\u0000\u263a\u263b\u2665\u2666\u2663\u2660\u2022\u25d8\u25cb\u25d9\u2642\u2640\u266a\u266b\u263c\u25ba\u25c4\u2195\u203c\u00b6\u00a7\u25ac\u21a8\u2191\u2193\u2192\u2190\u221f\u2194\u25b2\u25bc !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u2302\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00a2\u00a3\u00a5\u20a7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u2310\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u00df\u0393\u03c0\u03a3\u03c3\u00b5\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u03c6\u03b5\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\u00a0", "frame": {"out": ["\u2554\u2550\u2566\u2550\u2566\u2550\u2566\u2550\u2566\u2550\u2566\u2550\u2566\u2550\u2566\u2550\u2557O", "\u2551 \u2551 \u2551 \u2551 \u2551 \u2551 \u2551 \u2551 \u2551U", "\u255a\u2550\u2569\u2550\u2569\u2550\u2569\u2550\u2569\u2550\u2569\u2550\u2569\u2550\u2569\u2550\u255dT", " q w e r t y u i"], "input": ["\u2554\u2550\u2566\u2550\u2566\u2550\u2566\u2550\u2566\u2550\u2566\u2550\u2566\u2550\u2566\u2550\u2557I", "\u2551 \u2551 \u2551 \u2551 \u2551 \u2551 \u2551 \u2551 \u2551N", "\u255a\u2550\u2569\u2550\u2569\u2550\u2569\u2550\u2569\u2550\u2569\u2550\u2569\u2550\u2569\u2550\u255d", "  Input monitor"]}, "transport": "CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAcICAgICAgICAgICAgICAgICAgICAgICAgICAgHBwcHBwgICAgICAgICAgICA4ODg4ODg4ODg4ODg4ODg4ICAgICAgPDw8PDw8ICAgICAgICAgICAgICAgICAgHBwcICAgICAgICAgICAgICAgICAgICAgICAcHBwcHBwcHBwgICAgICAgICAgODg4ODg4ODg4ODg4ODg4OCAgICAgIDw8PDw8PCAgICAgICAgICAgICAgICAgIBwcHBwgICAgICAgICAgICAgICAgICAgICAcHBwcHBwcHBwcHCAgICAgICAgIDg4ODg4ODg4ODg4ODg4ODggICAgICA8PDw8PDwgICAgICAgICAgICAgICAgICAcHBwcHBwgICAgICAgICAgICAgICAgICAcHBwcHBwcHBwcHBwcICAgICAgICA4ODg4ODg4ODg4ODg4ODg4ICAgICAgPDw8PDw8ICAgICAgICAgICAgICAgICAgHBwcHBwcHBwgICAgICAgICAgICAgICAcHBwcHBwcHBwcHBwcHBwgICAgICAgODg4ODg4ODg4ODg4ODg4OCAgICAgIDw8PDw8PCAgICAgICAgICAgICAgICAgIBwcHBwcHBwcHBwgICAgICAgICAgICAgHBwcHBwcHBwcHBwcHBwcICAgICAgIDg4ODg4ODg4ODg4ODg4ODggICAgICA8PDw8PDwgICAgICAgICAgICAgICAgICAcHBwcHBwcHBwcHCAgICAgICAgICAgHBwcHBwcHBwcHBwcHBwcHBwgICAgICA4ODg4ODg4ODg4ODg4ODg4ICAgICAgPDw8PDw8ICAgICAgICAgICAgICAgICAgHBwcHBwcHBwcHBwcHCAgICAgICAgIBwcHBwcHBwcHBwcHBwcHBwcICAgICAgODg4ODg4ODg4ODg4ODg4OCAgICAgIDw8PDw8PCAgICAgICAgICAgICAgICAgIBwcHBwcHBwcHBwcHBwcHCAgICAgICAcHBwcHBwcHBwcHBwcHBwcHCAgICAgIDg4ODg4ODg4ODg4ODg4ODggICAgICA8PDw8PDwgICAgICAgICAgICAgICAgICAcHBwcHBwcHBwcHBwcICAgICAgICAgHBwcHBwcHBwcHBwcHBwcHBwgICAgICA4ODg4ODg4ODg4ODg4ODg4ICAgICAgPDw8PDw8ICAgICAgICAgICAgICAgICAgHBwcHBwcHBwcHBwgICAgICAgICAgIBwcHBwcHBwcHBwcHBwcHBwcICAgICAgODg4ODg4ODg4ODg4ODg4OCAgICAgIDw8PDw8PDw8PDw8PDw8ICAgICAgICAgIBwcHBwcHBwcHCAgICAgICAgICAgICAgHBwcHBwcHBwcHBwcHBwcICAgICAgIDg4ODg4ODg4ODg4ODg4ODggICAgICA8PDw8PDw8PDw8PDw8PCAgICAgICAgICAcHBwcHBwcICAgICAgICAgICAgICAgIBwcHBwcHBwcHBwcHBwcHCAgICAgICA4ODg4ODg4ODg4ODg4ODg4ICAgICAgPDw8PDw8PDw8PDw8PDwgICAgICAgICAgHBwcHBwgICAgICAgICAgICAgICAgICAgHBwcHBwcHBwcHBwcHCAgICAgICAgODg4ODg4ODg4ODg4ODg4OCAgICAgIDw8PDw8PDw8PDw8PDw8ICAgICAgICAgIBwcHCAgICAgICAgICAgICAgICAgICAgICAcHBwcHBwcHBwcHCAgICAgICAgIDg4ODg4ODg4ODg4ODg4ODggICAgICA8PDw8PDw8PDw8PDw8PCAgICAgICAgICAcICAgICAgICAgICAgICAgICAgICAgICAgIBwcHBwcHBwcHCAgICAgICAgICA4ODg4ODg4ODg4ODg4ODg4ICAgICAgPDw8PDw8PDw8PDw8PDwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIBwcHBwcICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg=", "menus": {"colors": ["           Colour Settings             \u2551                                     ", "               =  Red Green Blue       \u2551                                     ", "Title colour/Play indicator            \u2551     a = colour up, z = colour down. ", "Normal text colour                     \u2551     s = colour up, x = colour down. ", "High lighted text/Lock indicator       \u2551     d = colour up, c = colour down. ", "Group banks text colour                \u2551     f = colour up, v = colour down. ", "Scedule text colour/Stop indicator     \u2551     g = colour up, b = colour down. ", "Record indicator                       \u2551     h = colour up, n = colour down. ", "                                       \u2551                                     ", "Note: Will be upgraded soon!           \u2551      e     = Exit this A/Q box      "], "record": ["           Record selection            \u2551                                  ", "                                       \u2551                                  ", "To record in realtime means, as you    \u2551     t = RealTime recorder          ", "cotrol the output it records.          \u2551     v = Variable recorder          ", "                                       \u2551                                  ", "It is also possable to record the      \u2551     l = load recorded file       ", "outputs by giving the BIT number then  \u2551     s = Search for recorded file ", "the time delay, looping until you      \u2551                                  ", "stop it.                               \u2551     h = Help                     ", "Note: It records onto a new file.      \u2551     x = Exit this A/Q box        "], "help": ["                                       \u2551                                  ", "     Select a catagorie ---------->    \u2551      Controling outputs   press c", "                                       \u2551      Making an interface  press m", "                                       \u2551      Using groups         press g", "                                       \u2551      Recording/Playback   press r", "                                       \u2551      Using/making schdule press u", "                                       \u2551      Trobleshooting       press t", "                                       \u2551                                  ", "                                       \u2551      Aboute the author    press a", "                                       \u2551      Exit this help box   press x"], "groups": ["                Groups                 \u2551                                 ", "                                       \u2551      0 - 9 = Save a N\u00b0 KEY       ", "This will now save the current output  \u2551                                  ", "configeration into keys 0-9.           \u2551      s     = Save set of groups  ", "                                       \u2551      l     = Load set of groups  ", "   Press a number key you wish to      \u2551                                  ", "      save the output state as.        \u2551      a     = Search for group files", "                                       \u2551                                  ", "Note: Exit to change to a different    \u2551      h     = Help about groups   ", "    state, then come back into groups  \u2551      x     = Exit this A/Q box   "], "plugins": ["            Plugins                    \u2551                                     ", "                                       \u2551                                     ", "Plugins let you use Computer Control   \u2551                                     ", "to do percific tasks. Ie, you might    \u2551                                     ", "have a robot and you whant to track its\u2551                                     ", "movments, if it bumps into somthing    \u2551                                     ", "it records where that somthing is and  \u2551                                     ", "dosnt go there again!                  \u2551                                     ", "Here is a list of plugins you have.--->\u2551                                     ", "Visit the WWW for more.See end of prog.\u2551      x     = Exit this A/Q box      "], "welcome": ["    Welcome to Computer Control b5     \u2551       p = Play                        ", "       Thank you for registering       \u2551       c = Record                      ", "                                       \u2551       s = Stop                        ", "       (under constuction)             \u2551       g = Group                       ", "This is BETA version 5, this means     \u2551       d = Schedule                    ", " you MUST report errors to the author. \u2551       l = Plugins                     ", "                                       \u2551                                       ", " Use the keys below the out box to     \u2551       o = Options                     ", "          control output               \u2551       x = Exit                        ", "                                       \u2551       h = Help                        "], "parpots": ["         Parallel Port Selector        \u2551                                     ", "                                       \u2551                                     ", "Please choose an installed port by     \u2551                                     ", "pressing the representing number.      \u2551                                     ", "                                       \u2551                                     ", "(Or exit)                              \u2551                                     ", "                                       \u2551                                     ", "                                       \u2551                                     ", "Note: Addresses shown in decimal.      \u2551      x     = Exit this A/Q box      "], "makesce": ["       Making a Scedule                \u2551                                     ", "                                       \u2551      s    = Start making scedule    ", "When making a scedule use the defult   \u2551                                     ", "date (Todays date) or a date beyond:   \u2551                                     ", "                       (mm-dd-yyyy)    \u2551                                     ", "Also note that the time is:            \u2551                                     ", "                                       \u2551                                     ", "In 24 hour time.                       \u2551                                     ", "                                       \u2551      h    = Help on making a scedule", "                                       \u2551      x    = Exit this A/Q box       "], "scdel": ["           Deleting a scedule          \u2551                                     ", "                                       \u2551     1     = Delete bank 1           ", "Tap the bank number you wish to        \u2551     2     = Delete bank 2           ", "delete, or cancel by exiting.          \u2551     3     = Delete bank 3           ", "                                       \u2551     4     = Delete bank 4           ", "                                       \u2551     5     = Delete bank 5           ", "Note: - If you need to edit a bank,    \u2551     6     = Delete bank 6           ", "        it is surgested you delete it  \u2551                                     ", "        and remake it with edited      \u2551                                     ", "        changes.                       \u2551     x     = Exit this A/Q box       "], "ssce": ["   Now Making a Scedule                \u2551                                      ", "                                       \u2551                                      ", "Type the date if left emtpy it will    \u2551                                      ", "defult to todays date. Use in this     \u2551                                      ", "configeration:      mm/dd/yyyy         \u2551                                      ", "                or  mm-dd-yyyy         \u2551                                      ", "For time use this configeration:       \u2551                                      ", "                    hh:mm:ss           \u2551                                      ", "Then a record file name is needed.     \u2551                                      ", "For more info see help.                \u2551                                      "], "aurhor": ["           Daniel Vincent              \u2551                                                                                                                                                                                                           ", "                                       \u2551                                      ", "Daniel Vincent started to program at   \u2551                                      \" ", "the age of 7. The language was BASIC   \u2551                                      ", "on an Acorn Electron microcomputer     \u2551                                      ", "(Which was almost the same as a BBC,   \u2551                                      ", "but slower).                           \u2551                                      ", "                                       \u2551                                      ", "       More details soon!              \u2551                                      ", "                                       \u2551  x = exit  n = turn over             "], "conroling": ["          Controling Outputs           \u2551                                      ", "                                       \u2551                                      ", "To manuly turn the parallel port's     \u2551                                       ", "BITs on or off press a key below the   \u2551                                       ", "on-srceen BIT box once, this will      \u2551                                       ", "latch that bit on. Unlatching is done  \u2551                                       ", "by pressing the same key. You can      \u2551                                       ", "latch or unlatch any other BITs while  \u2551                                       ", "not afecting other BIts.               \u2551                                       ", "                                       \u2551      x     = Exit this A/Q box        "], "usgro": ["         Using Groups                  \u2551       Saving a set of groups          ", "                                       \u2551                                       ", "Groups enable you to turn multiple     \u2551This feature will save a whole         ", "BITs on with one keystroke.            \u2551set of banks into a new file that      ", "To Configure groups, go in to groups   \u2551can be reopened on new sessions.       ", "to save the current set of lached BITs \u2551  To save, go into groups then         ", "into number keys 0-9. To do this press \u2551save. The file name must be in DOS     ", "the number key(s), then exit with 'x'. \u2551                             PTO       ", "Then refigure the BITs and repeat,     \u2551      n     = Next page                ", "saving into different keys (banks).    \u2551      x     = Exit this A/Q box        "]}, "recordings": {"eg1.rec": {"name": "eg1.rec", "text": "0,5.078125E-02\n128,.8789063\n192,.5507813\n224,.5\n192,.4921875\n224,.4375\n240,.5507813\n248,.4414063\n252,.4882813\n254,.4414063\n255,.5507813\n251,2.25\n250,0\n248,.5\n240,0\n176,.5976563\n160,0\n128,.5507813\n0,0\n1,1.429688\n3,1.152344\n7,5.859375E-02\n15,.109375\n47,.6015625\n63,.6601563\n191,.546875\n255,.3320313\n127,3.289063\n63,.171875\n31,.1601563\n15,.1679688\n7,.1601563\n3,.171875\n1,.1601563\n0,.4375\n16,3.351563\n0,.5\n16,.109375\n0,.109375\n16,5.078125E-02\n0,.109375\n16,.109375\n0,.390625\n16,.8203125\n20,5.859375E-02\n16,.4921875\n20,5.078125E-02\n16,.109375\n20,.109375\n16,5.859375E-02\n20,.109375\n16,.1132813\n20,.046875\n4,.5507813\n0,0\n1,2.640625\n3,2.96875\n1,.1132813\n3,2.1875\n1,.4414063\n17,2.359375\n81,.9882813\n209,.6132813\n81,.7070313\n17,.1132813\n1,.65625\n0,.7734375\n2,.8789063\n6,.109375\n14,.109375\n30,5.078125E-02\n14,6.148438\n6,0\n4,.171875\n5,5.078125E-02\n13,.5507813\n5,.4375\n1,.0625\n5,1.308594\n4,.28125\n0,.546875\n1,0\n5,.3828125\n4,0\n0,.328125\n1,0\n5,.28125\n4,5.078125E-02\n0,.2773438\n1,0\n5,.3320313\n4,0\n0,.2695313\n1,.109375\n0,.4414063\n0,888\n"}, "eg2.rec": {"name": "eg2.rec", "text": "0,5.328125\n1,1.761719\n3,5.078125E-02\n7,.109375\n15,.109375\n31,.109375\n63,0\n127,0\n255,0\n254,.1679688\n252,5.078125E-02\n248,.2226563\n240,0\n224,5.859375E-02\n192,5.078125E-02\n128,.109375\n0,5.859375E-02\n1,.1601563\n3,.0625\n7,.21875\n15,0\n31,5.078125E-02\n63,5.859375E-02\n127,5.078125E-02\n255,.28125\n223,.2695313\n207,.1679688\n199,0\n231,.2226563\n167,.2695313\n39,.21875\n7,.1679688\n5,.4414063\n1,.2695313\n0,.5507813\n1,.3320313\n3,.2695313\n7,.1679688\n23,.109375\n55,.1601563\n119,.109375\n247,.4414063\n255,.3320313\n127,.328125\n63,.2734375\n31,.21875\n15,.21875\n7,.21875\n3,.1601563\n1,.171875\n0,.328125\n1,.3320313\n0,.21875\n1,.171875\n0,.21875\n1,.1601563\n0,.328125\n1,.171875\n0,.21875\n1,.1601563\n0,.21875\n1,.2226563\n0,.109375\n1,.1679688\n0,.2734375\n1,.4882813\n0,5.859375E-02\n1,.1132813\n0,.109375\n1,.046875\n0,.1132813\n1,.109375\n0,5.859375E-02\n1,.109375\n0,.109375\n1,.1601563\n0,.28125\n0,888\n"}, "eg3.rec": {"name": "eg3.rec", "text": "100,10\n200,5\n5,5\n60,10\n1,888\n"}}, "fontSource": "https://github.com/viler-int10h/vga-text-mode-fonts/blob/master/FONTS/PC-IBM/VGA8.F16", "fontSha256": "3efb3e4ba2c22d6d79df39b1dca9c5abb7fcdda1f8349228ac87ca5625dad40b"};
+
+</script>
+  <script type="module">
+// Standard parallel port, plus the exact eight-input mask used by COMPCON.BAS.
+const OUTPUT_KEYS = 'qwertyui';
+const INPUT_PINS = [11, 10, 12, 13, 17, 16, 14, 1];
+const STATUS_PINS = [10, 11, 12, 13, 15];
+const CONTROL_PINS = [1, 14, 16, 17];
+const BASE_ADDRESSES = [0x378, 0x278, 0x3bc];
+const STOP_MARKER = 888;
+
+function byte(value) {
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 0 || n > 255) throw new Error('Output must be a whole number from 0 to 255.');
+  return n;
+}
+
+class LptPort {
+  constructor(base = 0x378) { this.base = base; this.data = 0; this.controlLatch = 4; this.lowPins = new Set(); }
+  pinHigh(pin) {
+    if (pin >= 18 && pin <= 25) return false;
+    if (pin >= 2 && pin <= 9) return Boolean(this.data & (1 << (pin - 2)));
+    if (CONTROL_PINS.includes(pin)) {
+      const bit = CONTROL_PINS.indexOf(pin);
+      const drive = Boolean(this.controlLatch & (1 << bit)) !== (bit !== 2);
+      return drive && !this.lowPins.has(pin);
+    }
+    if (STATUS_PINS.includes(pin)) return !this.lowPins.has(pin);
+    throw new Error('Unknown DB-25 pin.');
+  }
+  pullLow(pin, low = true) {
+    if (![...STATUS_PINS, ...CONTROL_PINS].includes(pin)) throw new Error('Only status and control pins accept an external switch.');
+    if (low) this.lowPins.add(pin); else this.lowPins.delete(pin);
+  }
+  read(address) {
+    if (address === this.base) return this.data;
+    if (address === this.base + 1) return (Number(!this.pinHigh(11)) << 7) | (Number(this.pinHigh(10)) << 6) | (Number(this.pinHigh(12)) << 5) | (Number(this.pinHigh(13)) << 4) | (Number(this.pinHigh(15)) << 3);
+    if (address === this.base + 2) return (this.controlLatch & 0xf0) | (Number(!this.pinHigh(17)) << 3) | (Number(this.pinHigh(16)) << 2) | (Number(!this.pinHigh(14)) << 1) | Number(!this.pinHigh(1));
+    return 0;
+  }
+  write(address, value) {
+    if (address === this.base) this.data = byte(value);
+    else if (address === this.base + 2) this.controlLatch = byte(value);
+    else throw new Error('This register is read-only.');
+  }
+  toggleKey(key) { const i = OUTPUT_KEYS.indexOf(key.toLowerCase()); if (i >= 0) this.data ^= 1 << (7 - i); }
+  get inputByte() { return 255 - (((this.read(this.base + 1) & 0xf0) | (this.read(this.base + 2) & 0x0f)) ^ 0x8b); }
+}
+
+function parseRecording(text) {
+  const lines = String(text).replace(/^\uFEFF/, '').split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+  if (!lines.length) throw new Error('The recording is empty.');
+  if (lines.length > 20000) throw new Error('A recording may contain at most 20,000 steps.');
+  const events = lines.map((line, i) => {
+    const parts = line.split(',').map(x => x.trim());
+    if (parts.length !== 2 || parts.some(x => !/^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eEdD][+-]?\d+)?$/.test(x))) throw new Error(`Invalid recording at line ${i + 1}. Expected output,seconds.`);
+    const value = byte(Number(parts[0].replace(/[dD]/, 'E')));
+    const duration = Number(parts[1].replace(/[dD]/, 'E'));
+    if (!Number.isFinite(duration) || duration < 0) throw new Error(`Invalid delay at line ${i + 1}.`);
+    if (duration === STOP_MARKER && i !== lines.length - 1) throw new Error('The 888 stop marker must be the last row.');
+    return { value, duration };
+  });
+  return events;
+}
+function formatRecording(events) { return events.map(e => `${byte(e.value)},${Number(e.duration).toString()}`).join('\r\n') + '\r\n'; }
+function recordingDuration(events) { return events.reduce((n, e) => n + (e.duration === STOP_MARKER ? 0 : e.duration), 0); }
+function parseGroups(text) {
+  const parts = String(text).trim().split(/[\s,]+/);
+  if (parts.length !== 10 || parts.some(x => !/^\d+$/.test(x))) throw new Error('A group file must contain ten bytes in key order 1–9,0.');
+  const source = parts.map(byte);
+  return [source[9], ...source.slice(0, 9)];
+}
+function formatGroups(groups) {
+  if (groups.length !== 10) throw new Error('Ten group banks are required.');
+  return [...groups.slice(1), groups[0]].map(byte).join(',') + '\r\n';
+}
+
+class SequencePlayer {
+  constructor(onOutput, onEnd = () => {}) { this.onOutput = onOutput; this.onEnd = onEnd; this.playing = false; this.index = 0; this.elapsed = 0; }
+  start(events, now, speed = 1) {
+    if (!events.length || !(speed > 0)) throw new Error('Select a recording first.');
+    this.events = events; this.speed = speed; this.started = now; this.deadline = 0; this.index = 0; this.elapsed = 0; this.playing = true;
+    this.tick(now);
+  }
+  tick(now) {
+    if (!this.playing) return;
+    this.elapsed = Math.max(0, (now - this.started) * this.speed / 1000);
+    while (this.playing && this.elapsed >= this.deadline) {
+      if (this.index >= this.events.length) { this.playing = false; this.onEnd(); break; }
+      const e = this.events[this.index++]; this.onOutput(e.value);
+      if (e.duration === STOP_MARKER) { this.playing = false; this.onEnd(); break; }
+      this.deadline += e.duration;
+    }
+  }
+  stop() { this.playing = false; }
+}
+
+class RealtimeRecorder {
+  start(value, now) { this.events = []; this.current = byte(value); this.changed = now; this.started = now; this.active = true; }
+  change(value, now) {
+    if (!this.active || value === this.current) return;
+    this.events.push({ value: this.current, duration: Math.max(0, (now - this.changed) / 1000) });
+    this.current = byte(value); this.changed = now;
+  }
+  stop(now) {
+    if (!this.active) return [];
+    this.events.push({ value: this.current, duration: Math.max(0, (now - this.changed) / 1000) });
+    this.events.push({ value: this.current, duration: STOP_MARKER });
+    this.active = false;
+    return this.events;
+  }
+}
+
+// Work from explicit timestamps, rather than matching one exact clock second.
+function dueSchedules(schedules, now) {
+  return schedules.map((s, i) => ({ ...s, slot: i })).filter(s => s.enabled && !s.fired && Date.parse(s.at) <= now && Number.isFinite(Date.parse(s.at)));
+}
+
+// A palette-indexed 640×480 framebuffer. No browser text rasterization is used.
+const DEFAULT_PALETTE = ['#000000','#0000a0','#00a700','#00a7a0','#a00000','#a000a0','#a05700','#a0a7a0','#505050','#5050ff','#50ff50','#50ffff','#ff5050','#ff50ff','#fff850','#fff8ff'];
+class VgaScreen {
+  constructor(canvas, legacy) {
+    this.canvas = canvas; this.ctx = canvas.getContext('2d', { alpha: false });
+    this.font = Uint8Array.from(atob(legacy.font), c => c.charCodeAt(0));
+    this.characters = Array.from(legacy.characters);
+    this.lookup = new Map(this.characters.map((c, i) => [c, i]));
+    this.pixels = new Uint8Array(640 * 480);
+    this.image = this.ctx.createImageData(640, 480);
+    this.setPalette(DEFAULT_PALETTE);
+  }
+  setPalette(colors) { this.palette = colors.slice(); this.rgb = colors.map(c => [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)]); }
+  clear(color = 0) { this.pixels.fill(color); }
+  point(x, y, color) { x = Math.round(x); y = Math.round(y); if(x>=0&&x<640&&y>=0&&y<480)this.pixels[y*640+x]=color; }
+  rect(x1,y1,x2,y2,color,filled = true) {
+    if(!filled){this.line(x1,y1,x2,y1,color);this.line(x1,y2,x2,y2,color);this.line(x1,y1,x1,y2,color);this.line(x2,y1,x2,y2,color);return;}
+    const left=Math.max(0,Math.round(Math.min(x1,x2))),right=Math.min(639,Math.round(Math.max(x1,x2))),top=Math.max(0,Math.round(Math.min(y1,y2))),bottom=Math.min(479,Math.round(Math.max(y1,y2)));
+    for(let y=top;y<=bottom;y++)this.pixels.fill(color,y*640+left,y*640+right+1);
+  }
+  line(x0,y0,x1,y1,color) {
+    x0=Math.round(x0);y0=Math.round(y0);x1=Math.round(x1);y1=Math.round(y1);
+    const dx=Math.abs(x1-x0),sx=x0<x1?1:-1,dy=-Math.abs(y1-y0),sy=y0<y1?1:-1;let err=dx+dy;
+    while(true){this.point(x0,y0,color);if(x0===x1&&y0===y1)break;const e2=2*err;if(e2>=dy){err+=dy;x0+=sx;}if(e2<=dx){err+=dx;y0+=sy;}}
+  }
+  circle(cx,cy,r,color) {for(let y=-r;y<=r;y++){const w=Math.round(Math.sqrt(r*r-y*y));this.line(cx-w,cy+y,cx+w,cy+y,color);}}
+  triangle(x,y,width,height,color) {for(let row=0;row<=height;row++){const half=(width/2)*(1-Math.abs(row-height/2)/(height/2));this.line(x,y+row,x+half,y+row,color);}}
+  glyph(code,x,y,color=7,bg=0,opaque=true) {
+    if(opaque)this.rect(x,y,x+7,y+15,bg);
+    for(let row=0;row<16;row++){const bits=this.font[code*16+row];for(let col=0;col<8;col++)if(bits&(128>>col))this.point(x+col,y+row,color);}
+  }
+  text(row,col,text,color=7,bg=0) {
+    let x=(col-1)*8;const y=(row-1)*16;
+    for(const c of String(text)){if(x>=640)break;const code=this.lookup.get(c)??(c.charCodeAt(0)<32?c.charCodeAt(0):63);this.glyph(code,x,y,color,bg);x+=8;}
+  }
+  neat(text,sx,sy,color=2,size=2) {
+    if(sx===-1)sx=Math.round((640-text.length*8*size)/2);
+    for(let n=0;n<text.length;n++){const code=this.lookup.get(text[n])??63;for(let row=0;row<16;row++)for(let col=0;col<8;col++)if(this.font[code*16+row]&(128>>col))this.rect(sx+(n*8+col)*size-size,sy+row*size-size,sx+(n*8+col)*size,sy+row*size,color,false);}
+  }
+  present() {
+    const out=this.image.data;
+    for(let i=0;i<this.pixels.length;i++){const rgb=this.rgb[this.pixels[i]];out[i*4]=rgb[0];out[i*4+1]=rgb[1];out[i*4+2]=rgb[2];out[i*4+3]=255;}
+    this.ctx.putImageData(this.image,0,0);
+  }
+}
+
+
+const $ = id => document.getElementById(id);
+const legacy = window.CC_LEGACY;
+const screen = new VgaScreen($('screen'), legacy);
+const transportArt = Uint8Array.from(atob(legacy.transport), c => c.charCodeAt(0));
+const STORAGE_KEY = 'computer-control-b5-v1';
+const hex = n => '0x' + n.toString(16).toUpperCase().padStart(n > 255 ? 3 : 2, '0');
+const sec = n => Number(n.toFixed(3)).toString();
+const safeName = (name, extension) => (String(name).split(/[\\/]/).pop().replace(/[<>:"|?*\x00-\x1f]/g, '').slice(0, 100) || 'untitled') + (String(name).toLowerCase().endsWith(extension) ? '' : extension);
+let stored = {};
+let storageAvailable = true;
+try { stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch { storageAvailable = false; }
+const defaults = () => ({ port: 0, melt: false, quick: false, startupGroups: false, palette: DEFAULT_PALETTE.slice() });
+const validPalette = p => Array.isArray(p) && p.length === 16 && p.every(c => /^#[0-9a-f]{6}$/i.test(c));
+let settings = { ...defaults(), ...(stored.settings || {}) };
+if (!validPalette(settings.palette)) settings.palette = DEFAULT_PALETTE.slice();
+if (![0, 1, 2].includes(settings.port)) settings.port = 0;
+screen.setPalette(settings.palette);
+let savedSettings = structuredClone(settings);
+const ports = BASE_ADDRESSES.map(base => new LptPort(base));
+let groups = Array.isArray(stored.groups) && stored.groups.length === 10 && stored.groups.every(n => Number.isInteger(n) && n >= 0 && n <= 255) ? stored.groups : Array(10).fill(0);
+let groupName = settings.startupGroups && stored.groupName ? String(stored.groupName).slice(0, 100) : 'Group file not loaded';
+let groupUsed = false;
+let library = new Map();
+for (const item of Object.values(legacy.recordings)) library.set(item.name, { name: item.name, events: parseRecording(item.text) });
+for (const item of Array.isArray(stored.recordings) ? stored.recordings : []) {
+  try { if (typeof item.name === 'string') library.set(item.name.slice(0, 100), { name: item.name.slice(0, 100), events: parseRecording(item.text) }); } catch { /* Ignore invalid saved files. */ }
+}
+let schedules = Array.from({ length: 6 }, (_, i) => {
+  const s = stored.schedules?.[i];
+  return s && typeof s.name === 'string' && Number.isFinite(Date.parse(s.at)) ? { name: s.name, at: s.at, enabled: false, fired: Boolean(s.fired) } : { name: '', at: '', enabled: false, fired: false };
+});
+let panel = 'welcome', loaded = null, selectedPin = 9, prompt = null, optionDraft = null;
+let dirty = true, startupUntil = settings.quick ? performance.now() + 1300 : 0;
+let recordingName = 'recording.rec', countdownUntil = 0, recorder = new RealtimeRecorder();
+let plugin = false, lastPluginInput = -1, transitionUntil = 0;
+let lastTick = 0, lastScheduleCheck = 0, lastUiTime = 0;
+let scheduleDraft = {};
+let messageUntil = 0, screenMessage = '';
+let byteEditing = false;
+
+const port = () => ports[settings.port];
+function status(message) { $('transport-status').textContent = message + (storageAvailable ? '' : ' Browser storage is unavailable; export files to keep them.'); }
+function save() {
+  try {
+    const saved = { settings: savedSettings, groups, groupName, schedules, recordings: [...library.values()].filter(r => !legacy.recordings[r.name] || formatRecording(r.events) !== legacy.recordings[r.name].text).map(r => ({ name: r.name, text: formatRecording(r.events) })) };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  } catch { storageAvailable = false; }
+}
+function announce(message) { screenMessage = message.slice(0, 36); messageUntil = performance.now() + 2500; status(message); dirty = true; }
+function mark() { dirty = true; }
+function setData(value, manual = false) {
+  value = byte(value);
+  if (manual && player.playing) { player.stop(); status('Playback interrupted by manual output control.'); }
+  recorder.change(value, performance.now());
+  port().write(port().base, value); groupUsed = false; mark();
+}
+const player = new SequencePlayer(value => setData(value), () => { status('Playback finished. Final output retained: ' + port().data + '.'); save(); mark(); });
+
+function download(name, text) {
+  const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+  const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+function load(item) {
+  if (recorder.active || countdownUntil) stopAll();
+  player.stop(); loaded = item; library.set(item.name, item); panel = 'welcome'; prompt = null;
+  status(`${item.name} loaded · ${sec(recordingDuration(item.events))} seconds · ${item.events.filter(e => e.duration !== 888).length} timed steps.`);
+  save(); mark();
+}
+function play() {
+  if (recorder.active || countdownUntil) stopAll();
+  if (!loaded) { panel = 'record'; announce('Select an example or open a .rec file.'); return; }
+  plugin = false; panel = 'welcome'; prompt = null; groupUsed = false;
+  player.start(loaded.events, performance.now(), Number($('speed').value));
+  status(`Playing ${loaded.name} · ${$('speed').value}× speed.`); mark();
+}
+function stopAll() {
+  player.stop(); plugin = false;
+  if (recorder.active) {
+    const events = recorder.stop(performance.now());
+    loaded = { name: recordingName, events }; library.set(loaded.name, loaded); save();
+    status(`Recorded ${loaded.name} · ${sec(recordingDuration(events))} seconds. Use Save .rec to export.`);
+  } else status(countdownUntil ? 'Recording cancelled.' : 'Stopped. All data outputs LOW.');
+  countdownUntil = 0; port().write(port().base, 0); mark();
+}
+function startRecording(name) {
+  if (recorder.active || countdownUntil) stopAll();
+  player.stop(); plugin = false; recordingName = safeName(name, '.rec');
+  panel = 'welcome'; prompt = null; countdownUntil = performance.now() + 5000;
+  status('Get ready to record · 5 second countdown.'); mark();
+}
+function go(next) {
+  if (panel === 'options' && next !== 'colors' && next !== 'parpots') optionDraft = null;
+  if (settings.melt && panel !== next && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) transitionUntil = performance.now() + 120;
+  panel = next; prompt = null; screenMessage = ''; mark();
+}
+function beginPrompt(title, initial, callback, returnPanel = panel) {
+  prompt = { title, text: initial, callback, returnPanel };
+  mark(); $('screen').focus({ preventScroll: true });
+}
+function showSequence() {
+  $('sequence-name').value = loaded?.name || 'sequence.rec';
+  $('sequence-text').value = loaded ? formatRecording(loaded.events) : '128,1\n64,1\n32,1\n16,1\n8,1\n4,1\n2,1\n1,1\n0,888\n';
+  $('sequence-error').textContent = ''; $('sequence-dialog').showModal();
+}
+function showSchedules() {
+  renderSchedules();
+  const d = new Date(Date.now() + 60000); d.setMilliseconds(0);
+  $('schedule-time').value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 19);
+  $('schedule-error').textContent = ''; $('schedule-dialog').showModal();
+}
+function addSchedule(at, name) {
+  const i = schedules.findIndex(s => !s.name || s.fired);
+  if (i < 0) throw new Error('All six scheduler banks are in use. Delete a bank first.');
+  const timestamp = Date.parse(at);
+  if (!Number.isFinite(timestamp) || timestamp <= Date.now()) throw new Error('Choose a future date and time.');
+  if (!library.has(name)) throw new Error('Choose an available recording.');
+  schedules[i] = { name, at: new Date(timestamp).toISOString(), enabled: true, fired: false };
+  save(); renderSchedules(); mark(); status(`Schedule bank ${i + 1} saved.`);
+}
+function renderSchedules() {
+  $('schedule-list').replaceChildren();
+  schedules.forEach((s, i) => {
+    if (!s.name) return;
+    const row = document.createElement('div'); row.className = 'schedule-row';
+    const text = document.createElement('div'); text.textContent = `Bank ${i + 1} · ${s.name}`;
+    const detail = document.createElement('div'); detail.textContent = new Date(s.at).toLocaleString() + (s.fired ? ' · completed' : s.enabled ? ' · armed' : ' · paused'); text.append(detail);
+    const toggle = document.createElement('button'); toggle.type = 'button'; toggle.textContent = s.enabled ? 'Pause' : 'Enable'; toggle.disabled = s.fired;
+    toggle.addEventListener('click', () => {
+      if (!s.enabled && Date.parse(s.at) <= Date.now()) { $('schedule-error').textContent = 'This saved time has passed. Delete it and choose a future time.'; return; }
+      s.enabled = !s.enabled; save(); renderSchedules(); mark();
+    });
+    const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Delete'; remove.setAttribute('aria-label', `Delete schedule bank ${i + 1}`); remove.addEventListener('click', () => { schedules[i] = { name: '', at: '', enabled: false, fired: false }; save(); renderSchedules(); mark(); });
+    row.append(text, toggle, remove); $('schedule-list').append(row);
+  });
+  if (!$('schedule-list').childElementCount) $('schedule-list').textContent = 'No scheduled recordings.';
+  const previous = $('schedule-recording').value;
+  $('schedule-recording').replaceChildren(...[...library.keys()].map(name => new Option(name, name)));
+  if (library.has(previous)) $('schedule-recording').value = previous;
+  else if (loaded) $('schedule-recording').value = loaded.name;
+}
+function changePort(index) {
+  if (player.playing || recorder.active || countdownUntil) stopAll();
+  settings.port = index; $('port-select').value = index; mark(); status('Controlling virtual LPT' + (index + 1) + ' at ' + hex(port().base) + '.');
+}
+function rotateColor(index, up) {
+  const colors = ['#000000','#0000a0','#00a700','#00a7a0','#a00000','#a000a0','#a05700','#a0a7a0','#505050','#5050ff','#50ff50','#50ffff','#ff5050','#ff50ff','#fff850','#fff8ff'];
+  let position = colors.findIndex(x => x === settings.palette[index]);
+  if (position < 0) position = index;
+  settings.palette[index] = colors[(position + (up ? 1 : 15)) % colors.length];
+  // Keep the selected role visible against the original black screen.
+  if (settings.palette[index] === '#000000') settings.palette[index] = colors[up ? 1 : 15];
+  screen.setPalette(settings.palette); mark();
+}
+
+function keypress(key) {
+  const originalKey = key;
+  key = key.toLowerCase(); startupUntil = 0;
+  if (prompt) {
+    if (key === 'escape') { prompt = null; mark(); return; }
+    if (key === 'enter') {
+      const active = prompt; prompt = null;
+      try { active.callback(active.text); } catch (e) { announce(e.message); }
+      mark(); return;
+    }
+    if (key === 'backspace') prompt.text = prompt.text.slice(0, -1);
+    else if (originalKey.length === 1 && /^[\x20-\x7e]$/.test(originalKey) && prompt.text.length < 72) prompt.text += originalKey;
+    mark(); return;
+  }
+  if (countdownUntil && key === 's') { stopAll(); return; }
+  if (player.playing && key === 's') { stopAll(); return; }
+  if (key === 'escape') { go('welcome'); return; }
+  if (panel === 'plugin' && key === 'x') { plugin = false; go('welcome'); return; }
+  if (panel === 'welcome' || panel === 'plugin') {
+    if (OUTPUT_KEYS.includes(key) && key.length === 1) { setData(port().data ^ (1 << (7 - OUTPUT_KEYS.indexOf(key))), true); return; }
+    if (/^[0-9]$/.test(key)) { setData(groups[Number(key)], true); groupUsed = true; return; }
+    if (key === 'p') play();
+    else if (key === 's') stopAll();
+    else if (key === 'c') go('record');
+    else if (key === 'g') go('groups');
+    else if (key === 'd') go('schedule');
+    else if (key === 'o') { optionDraft = structuredClone(settings); go('options'); }
+    else if (key === 'h') go('help');
+    else if (key === 'l') go('plugins');
+    else if (key === 'x') { stopAll(); go('exit'); }
+    return;
+  }
+  if (panel === 'exit') { go('welcome'); return; }
+  if (panel === 'groups') {
+    if (/^[0-9]$/.test(key)) { groups[Number(key)] = port().data; save(); announce('Current outputs saved to bank ' + key + '.'); }
+    else if (key === 's') beginPrompt('Save group file:', 'groups.gro', name => { groupName = safeName(name, '.gro'); download(groupName, formatGroups(groups)); save(); announce('Group file saved.'); });
+    else if (key === 'l' || key === 'a') $('groups-file').click();
+    else if (key === 'h') go('usgro');
+    else if (key === 'x') go('welcome');
+    return;
+  }
+  if (panel === 'record') {
+    if (key === 't') beginPrompt('File:', 'recording.rec', startRecording);
+    else if (key === 'v') showSequence();
+    else if (key === 'l') $('recording-file').click();
+    else if (key === 's') { $('sample').focus(); announce('Choose an example below the screen.'); }
+    else if (key === 'h') go('recordhelp');
+    else if (key === 'x') go('welcome');
+    return;
+  }
+  if (panel === 'options') {
+    if (key === 'c') go('colors');
+    else if (key === 'p') go('parpots');
+    else if (key === 'm') { settings.melt = !settings.melt; mark(); }
+    else if (key === 'q') { settings.quick = !settings.quick; mark(); }
+    else if (key === 'g') { settings.startupGroups = !settings.startupGroups; mark(); }
+    else if (key === 'd') { const oldPort=settings.port; settings = defaults(); if(oldPort!==0)changePort(0); screen.setPalette(settings.palette); mark(); }
+    else if (key === 's') { savedSettings = structuredClone(settings); save(); optionDraft = null; go('welcome'); announce('Options saved.'); }
+    else if (key === 'x') { if(optionDraft){settings = optionDraft;screen.setPalette(settings.palette);$('port-select').value=settings.port;} optionDraft=null;go('welcome'); }
+    return;
+  }
+  if (panel === 'parpots') { if (/^[123]$/.test(key)) { changePort(Number(key)-1); go('options'); } else if (key === 'x') go('options'); return; }
+  if (panel === 'colors') {
+    const up='asdfgh', down='zxcvbn', roles=[2,7,15,9,14,4];
+    if (key==='u') rotateColor(9,false);
+    else if (up.includes(key) && key.length===1) rotateColor(roles[up.indexOf(key)],true);
+    else if (down.includes(key) && key.length===1) rotateColor(roles[down.indexOf(key)],false);
+    else if(key==='e')go('options');return;
+  }
+  if (panel === 'schedule' || panel === 'makesce') {
+    if (key === 'm' || key === 's') {
+      const today = new Date();
+      beginPrompt('Date (mm-dd-yyyy):', `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}-${today.getFullYear()}`, date => {
+        if (!/^\d{2}[-/]\d{2}[-/]\d{4}$/.test(date)) throw new Error('Use mm-dd-yyyy.');
+        scheduleDraft.date = date;
+        beginPrompt('Time (hh:mm:ss):', '', time => {
+          if (!/^\d{2}:\d{2}:\d{2}$/.test(time)) throw new Error('Use hh:mm:ss.');
+          scheduleDraft.time = time;
+          beginPrompt('Recorded file:', loaded?.name || 'eg1.rec', name => {
+            const [month,day,year] = scheduleDraft.date.split(/[-/]/);
+            const at = `${year}-${month}-${day}T${scheduleDraft.time}`; addSchedule(at,name);go('welcome');
+          });
+        });
+      });
+    } else if (key === 'd') go('scdel');
+    else if (key === 'r') go('record');
+    else if (key === 'h') go('schedulehelp');
+    else if (key === 'x') go('welcome');
+    return;
+  }
+  if(panel==='scdel') {if(/^[1-6]$/.test(key)){schedules[Number(key)-1]={name:'',at:'',enabled:false,fired:false};save();mark();}else if(key==='x')go('schedule');return;}
+  if(panel==='plugins') {if(key==='1'){plugin=true;lastPluginInput=-1;go('plugin');status('Plugin demonstration: virtual inputs mirror to the data outputs.');}else if(key==='x')go('welcome');return;}
+  if(panel==='help') {
+    const pages={c:'conroling',m:'wiring',g:'usgro',r:'recordhelp',u:'schedulehelp',t:'troubleshooting',a:'aurhor',x:'welcome'};
+    if(pages[key])go(pages[key]);return;
+  }
+  if(key==='x')go('help');
+}
+
+function paired(left, right = []) { return Array.from({length:10}, (_,i)=>(left[i]||'').slice(0,39).padEnd(39)+'║'+(right[i]||'').slice(0,40)); }
+function menuRows() {
+  if(panel==='options') return paired(['              Options','','To slightly customize how this program','works, please choose an option ----->','','Using LPT '+(settings.port+1),'Melter effect is '+(settings.melt?'on':'off'),'Quick logo is '+(settings.quick?'on':'off'),settings.startupGroups?'Group banks load on start up':'No group file on start up'],['','   c  =  Colour settings','   p  =  Select Parallel Port','   m  =  Melter effect On/Off','   q  =  Quick logo on startup On/Off','   g  =  Load group on start up','','   d  =  Load Defults','   s  =  Exit and Save','   x  =  Exit, without saving']);
+  if(panel==='schedule') return paired(['            Sceduler','','There are currently '+schedules.filter(s=>s.name&&!s.fired).length+' sceduler banks','being used, a maximum of 6 can be used.','','This sceduler runs recored files at','a set time and date.','','Note: You must be in the main A/Q box','before a sceduled bank will exicute!'],['','      m     = Make a scedule','      d     = Delete a scedule bank','','','','','      r     = Goto Record section','      h     = Help on sceduler','      x     = Exit this A/Q box']);
+  if(panel==='recordhelp')return paired(['          Recording/Playback','','RealTime records your output changes.','Variable lets you enter exact delays.','Each line: output byte, delay seconds.','An 888 delay marks the end of a file.','','P plays the loaded file; S stops.','Save .rec keeps a copy on your device.'],['','   c, then t = RealTime recorder','   c, then v = Variable recorder','   c, then l = Load a .rec file','','','','','','   x = Back to help']);
+  if(panel==='schedulehelp')return paired(['          Using the Sceduler','','Make up to six playback banks.','Choose a date, time and recorded file.','Keep this page open for it to run.','Saved banks start paused next session.','','If busy, playback waits until idle.','Edit or re-enable using Scheduler.'],['','','','','','','','','','   x = Back to help']);
+  if(panel==='troubleshooting')return paired(['             Trobleshooting','','Q W E R T Y U I toggle the data bits.','Click the screen to give it focus.','The virtual switches pull inputs LOW.','No printer port or driver is required.','','Open .rec and .gro below the screen.','Export files if browser storage fails.'],['','','','','','','','','','   x = Back to help']);
+  if(panel==='plugin')return paired(['       Virtual input/output plug-in','','Input switches mirror to data bits.','This browser demo replaces DOS SHELL.','','The original program stays available.'],['','','','','','','','','','   x = Exit plug-in']);
+  if(panel==='colors')return legacy.menus.colors.slice(0,10);
+  if(panel==='parpots')return paired(['         Parallel Port Selector','','Please choose an installed port by','pressing the representing number.','','(Or exit)','','','Note: Addresses shown in decimal.'],['','','','1. lpt1 is installed at address 888','2. lpt2 is installed at address 632','3. lpt3 is installed at address 956','','','','     x = Exit this A/Q box']);
+  return legacy.menus[panel] || legacy.menus.welcome;
+}
+
+function drawMain(now) {
+  screen.clear();
+  if (startupUntil > now) { drawLogo(); screen.present(); return; }
+  if (panel==='exit') {
+    screen.neat('Good bye!',-1,25,2,2);screen.neat('Tell me what you think at...',-1,55,15,1);screen.text(5,3,'Daniel@vincent99.freeserve.co.uk',5);screen.text(25,26,'Any key to return');screen.present();return;
+  }
+  screen.text(2,1,'Controlling LPT '+(settings.port+1)+' with-');
+  screen.neat('Computer Control',-1,5,2,2);
+  screen.text(2,57,'- By Daniel Vincent');
+  const outRows=legacy.frame.out;
+  outRows.forEach((t,i)=>screen.text(4+i,31,t));
+  const inRows=legacy.frame.input;
+  inRows.forEach((t,i)=>screen.text(9+i,31,t));
+  for(let i=0;i<8;i++){
+    screen.glyph(15,248+i*16,64,(port().data&(1<<(7-i)))?4:0);
+    screen.glyph(15,248+i*16,144,(port().inputByte&(1<<(7-i)))?4:0);
+  }
+  for(let i=0;i<10;i++)screen.text(4+i,53,'Group N° KEY '+i+' < '+groups[i]+' >  ',9);
+  screen.text(15,53,groupName.slice(0,26),9);
+  screen.text(3,1,'──────────────────────────┐');
+  screen.text(4,1,'         File Info        ',1);screen.text(4,27,'│');
+  for(let row=5;row<=9;row++)screen.text(row,1,'                          │');
+  if(loaded){screen.text(5,1,loaded.name.slice(0,26),1);screen.text(6,1,' '+sec(recordingDuration(loaded.events))+' seconds long',1);screen.text(7,1,' '+loaded.events.filter(e=>e.duration!==888).length+' operations',1);}
+  screen.text(10,1,'──────────────────────────┤');
+  screen.text(11,1,'         Scheduler',14);screen.text(11,27,'│');
+  for(let row=12;row<=17;row++)screen.text(row,1,'                          │');
+  schedules.forEach((s,i)=>{if(s.name&&!s.fired){const dt=new Date(s.at),pad=n=>String(n).padStart(2,'0');const date=`${pad(dt.getMonth()+1)}-${pad(dt.getDate())}-${dt.getFullYear()}`,time=`${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;screen.text(12+i,1,`${i+1}} ${date} at ${time}`.slice(0,26),14);}});
+  screen.text(18,1,'═══════════════════════════════════════╦═══════════════════════════════════════');
+  screen.line(211,260,211,276,7);screen.line(212,260,212,276,7);
+  for(let y=0;y<26;y++)for(let x=0;x<91;x++){
+    let color=transportArt[y*91+x];
+    if(color===7&&x>=5&&x<=20&&player.playing)color=2;
+    if(color===7&&x>=27&&x<=43&&recorder.active)color=4;
+    if(color===14&&(player.playing||recorder.active))color=7;
+    screen.point(265+x,225+y,color);
+  }
+    if(panel==='wiring') {
+    // The original embedded help illustration is displayed at its native size.
+    const img=$('wiring-image');if(img?.complete){screen.present();screen.ctx.drawImage(img,0,0);return;}
+  }
+  const rows=menuRows(); rows.forEach((text,i)=>screen.text(19+i,1,text));
+  // COLOR statements in the source apply to the left side of these menu rows.
+  if(panel==='colors'){
+    const roles=[2,7,15,9,14,4];roles.forEach((color,i)=>screen.text(21+i,1,(rows[2+i]||'').slice(0,39),color));
+  }
+  if(prompt){
+    screen.rect(320,288,639,447,0);for(let i=0;i<10;i++)screen.text(19+i,40,'║');
+    screen.text(20,42,prompt.title,15);
+    const text=prompt.text.slice(-36);screen.text(22,42,text,7);
+    if(Math.floor(now/500)%2===0)screen.glyph(95,328+text.length*8,336,15);
+    screen.text(26,42,'Enter = Continue',7);screen.text(27,42,'Esc   = Cancel',7);
+  }else if(countdownUntil){screen.rect(320,304,639,367,0);screen.text(20,42,'Get ready to record',15);screen.text(22,42,'in T - '+Math.max(0,Math.ceil((countdownUntil-now)/1000)),14);}
+  else if(messageUntil>now)screen.text(28,42,screenMessage,15);
+  if(transitionUntil>now){for(let i=0;i<35;i++){const x=Math.floor(Math.random()*271),y=Math.floor(Math.random()*150+280);screen.pixels.copyWithin((y+3)*640+x,y*640+x,y*640+x+320);}}
+  screen.present();
+}
+function drawLogo(){
+  // The original quick logo's WINDOW(-500,-500)-(500,500) coordinates.
+  const px=x=>(x+500)*.64,py=y=>(500-y)*.48;
+  const line=(a,b,c,d)=>screen.line(px(a),py(b),px(c),py(d),9);
+  [[-135,100,-210,100],[-135,100,-135,-100],[-135,-100,-210,-100],[-200,100,-200,-100],[-50,100,25,100],[-50,100,-50,-100],[-50,0,25,0],[25,-100,25,100],[105,100,180,-100],[180,100,180,-100],[105,100,105,-100]].forEach(args=>line(...args));
+  screen.rect(px(-420),py(5),px(450),py(-10),2);screen.text(7,15,'Extravaganza',2);screen.text(19,17,'Presents...',2);
+}
+
+const names={1:'/STROBE',10:'/ACK',11:'BUSY',12:'PAPER END',13:'SELECT',14:'/AUTOFEED',15:'/ERROR',16:'/INIT',17:'/SELECT IN'};
+const role=p=>p>=18?'ground':p>=2&&p<=9?'data':[10,11,12,13,15].includes(p)?'status':'control';
+const signalName=p=>role(p)==='ground'?'Ground':role(p)==='data'?'D'+(p-2):names[p];
+function buildInspector(){
+  for(let p=1;p<=25;p++){
+    const button=document.createElement('button');button.type='button';button.className='pin';button.dataset.pin=p;button.dataset.role=role(p);button.innerHTML=p+'<i></i>';
+    button.addEventListener('click',()=>{selectedPin=p;mark();});$(p<=13?'pins-top':'pins-bottom').append(button);
+  }
+  for(let i=0;i<8;i++){
+    const key=OUTPUT_KEYS[i],pin=9-i;
+    const button=document.createElement('button');button.type='button';button.dataset.output=i;button.setAttribute('aria-label',`${key.toUpperCase()}, bit ${7-i}, pin ${pin}`);button.innerHTML=key.toUpperCase()+`<small>D${7-i} · pin ${pin}</small>`;
+    button.addEventListener('click',()=>{startupUntil=0;setData(port().data^(1<<(7-i)),true);selectedPin=pin;});$('output-keys').append(button);
+    const item=document.createElement('div');item.className='signal';item.dataset.bit=7-i;item.innerHTML=`<strong>${key.toUpperCase()} → ${pin}</strong><span></span>`;$('output-signals').append(item);
+  }
+  for(const p of [...INPUT_PINS,15]){
+    const button=document.createElement('button');button.type='button';button.className='switch';button.dataset.inputPin=p;
+    button.addEventListener('click',()=>{port().pullLow(p,!port().lowPins.has(p));selectedPin=p;mark();});$('input-switches').append(button);
+  }
+  for(let i=0;i<10;i++){
+    const row=document.createElement('div');row.className='group-bank';row.innerHTML=`<span>${i}</span><output data-group="${i}">0</output>`;
+    const use=document.createElement('button');use.type='button';use.textContent='Use';use.setAttribute('aria-label',`Recall group ${i}`);use.addEventListener('click',()=>{setData(groups[i],true);groupUsed=true;});
+    const store=document.createElement('button');store.type='button';store.textContent='Store';store.setAttribute('aria-label',`Save current outputs to group ${i}`);store.addEventListener('click',()=>{groups[i]=port().data;save();announce('Current outputs saved to bank '+i+'.');});row.append(use,store);$('group-banks').append(row);
+  }
+  const img=new Image();img.id='wiring-image';img.src='data:image/png;base64,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';img.hidden=true;img.addEventListener('load',mark);document.body.append(img);
+}
+function drawInspector(){
+  const p=port();
+  document.querySelectorAll('[data-pin]').forEach(b=>{const pin=Number(b.dataset.pin);b.dataset.level=p.pinHigh(pin)?'H':'L';b.setAttribute('aria-label',`Pin ${pin}, ${signalName(pin)}, ${role(pin)==='ground'?'ground':p.pinHigh(pin)?'HIGH':'LOW'}`);b.setAttribute('aria-pressed',String(pin===selectedPin));});
+  document.querySelectorAll('[data-output]').forEach(b=>b.setAttribute('aria-pressed',String(Boolean(p.data&(1<<(7-Number(b.dataset.output)))))));
+  document.querySelectorAll('[data-bit]').forEach(b=>{const on=Boolean(p.data&(1<<Number(b.dataset.bit)));b.dataset.on=on;b.querySelector('span').textContent=`D${b.dataset.bit} · ${on?'HIGH':'LOW'}`;});
+  document.querySelectorAll('[data-input-pin]').forEach(b=>{const pin=Number(b.dataset.inputPin),low=p.lowPins.has(pin);b.innerHTML=`${pin} · ${low?'CLOSED':'OPEN'}<span>${names[pin]}</span>`;b.setAttribute('aria-pressed',String(low));b.setAttribute('aria-label',`Pin ${pin} ${names[pin]}, switch ${low?'closed, release HIGH':'open, pull LOW'}`);});
+  document.querySelectorAll('[data-group]').forEach(o=>o.textContent=groups[Number(o.dataset.group)]);
+  $('selected-pin').textContent=`Pin ${selectedPin} · ${signalName(selectedPin)} · ${role(selectedPin)==='ground'?'ground':p.pinHigh(selectedPin)?'HIGH':'LOW'}${selectedPin===15?' · not read by the original input monitor':role(selectedPin)==='control'?' · control line used as a virtual input':''}`;
+  $('data-register').textContent=hex(p.data);$('status-register').textContent=hex(p.read(p.base+1));$('control-register').textContent=hex(p.read(p.base+2));
+  $('data-address').textContent=hex(p.base);$('status-address').textContent=hex(p.base+1);$('control-address').textContent=hex(p.base+2);
+  $('binary-byte').textContent=p.data.toString(2).padStart(8,'0');if(!byteEditing&&document.activeElement!==$('output-byte'))$('output-byte').value=p.data;
+  $('play-button').disabled=player.playing;$('record-button').dataset.active=recorder.active||Boolean(countdownUntil);document.body.dataset.recording=recorder.active;
+  $('export-recording').disabled=!loaded;$('screen').dataset.output=p.data;$('screen').dataset.input=p.inputByte;$('screen').dataset.panel=panel;
+}
+
+buildInspector();
+$('screen').addEventListener('keydown',e=>{
+  if(e.ctrlKey||e.altKey||e.metaKey||e.repeat)return;
+  if(e.key.length===1||['Enter','Escape','Backspace'].includes(e.key)){e.preventDefault();keypress(e.key);}
+});
+$('screen').addEventListener('pointerdown',e=>{
+  $('screen').focus({preventScroll:true});startupUntil=0;
+  const bounds=$('screen').getBoundingClientRect(),x=(e.clientX-bounds.left)*640/bounds.width,y=(e.clientY-bounds.top)*480/bounds.height;
+  if(panel==='wiring'){go('help');return;}
+  if(y>=52&&y<=91&&x>=240&&x<375){setData(port().data^(1<<(7-Math.min(7,Math.floor((x-240)/16)))),true);return;}
+  if(y>=225&&y<=250){if(x>=265&&x<290)play();else if(x>=290&&x<312)keypress('c');else if(x>=312&&x<=333)stopAll();else if(x>=334&&x<=356)keypress('d');}
+  mark();
+});
+$('play-button').addEventListener('click',play);
+$('record-button').addEventListener('click',()=>{go('record');beginPrompt('File:','recording.rec',startRecording);});
+$('stop-button').addEventListener('click',stopAll);
+$('home-button').addEventListener('click',()=>{plugin=false;startupUntil=0;go('welcome');$('screen').focus();});
+$('load-sample').addEventListener('click',()=>{load(library.get($('sample').value));$('screen').focus();});
+$('import-recording').addEventListener('click',()=>$('recording-file').click());
+$('export-recording').addEventListener('click',()=>{if(loaded)download(safeName(loaded.name,'.rec'),formatRecording(loaded.events));});
+$('edit-sequence').addEventListener('click',showSequence);
+$('schedule-button').addEventListener('click',()=>{go('schedule');showSchedules();});
+$('groups-button').addEventListener('click',()=>{go('groups');$('screen').focus();});
+$('options-button').addEventListener('click',()=>{optionDraft=structuredClone(settings);go('options');$('screen').focus();});
+$('help-button').addEventListener('click',()=>{go('help');$('screen').focus();});
+$('about-button').addEventListener('click',()=>$('about-dialog').showModal());
+$('port-select').value=settings.port;
+$('port-select').addEventListener('change',()=>{changePort(Number($('port-select').value));savedSettings.port=settings.port;save();});
+$('speed').addEventListener('change',()=>{if(player.playing){stopAll();status('Playback stopped. Press Play to use the selected speed.');}});
+$('output-byte').addEventListener('input',()=>{byteEditing=true;});
+$('byte-form').addEventListener('submit',e=>{e.preventDefault();try{const value=byte($('output-byte').value);byteEditing=false;setData(value,true);status('Output byte set to '+port().data+'.');}catch(error){announce(error.message);}});
+$('recording-file').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>1_000_000)throw new Error('Recording file is too large.');load({name:file.name,events:parseRecording(await file.text())});}catch(error){announce(error.message);}e.target.value='';});
+$('groups-file').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>4096)throw new Error('Group file is too large.');groups=parseGroups(await file.text());groupName=file.name;save();announce('Group file loaded.');panel='welcome';}catch(error){announce(error.message);}e.target.value='';mark();});
+$('import-groups').addEventListener('click',()=>$('groups-file').click());
+$('export-groups').addEventListener('click',()=>download('groups.gro',formatGroups(groups)));
+$('sequence-form').addEventListener('submit',e=>{e.preventDefault();try{const item={name:safeName($('sequence-name').value,'.rec'),events:parseRecording($('sequence-text').value)};load(item);$('sequence-dialog').close();$('screen').focus();}catch(error){$('sequence-error').textContent=error.message;}});
+$('schedule-form').addEventListener('submit',e=>{e.preventDefault();try{addSchedule($('schedule-time').value,$('schedule-recording').value);$('schedule-error').textContent='';}catch(error){$('schedule-error').textContent=error.message;}});
+document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('close',()=>{mark();$('screen').focus({preventScroll:true});}));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){player.tick(performance.now());mark();}});
+
+function tick(now){
+  if(startupUntil&&now>=startupUntil){startupUntil=0;mark();}
+  if(transitionUntil&&now>=transitionUntil){transitionUntil=0;mark();}
+  if(screenMessage&&now>=messageUntil){screenMessage='';mark();}
+  player.tick(now);
+  if(countdownUntil&&now>=countdownUntil){countdownUntil=0;setData(0);recorder.start(0,now);status('Recording output changes · press S to stop.');mark();}
+  if(plugin){const input=port().inputByte;if(input!==lastPluginInput){lastPluginInput=input;setData(input);}}
+  if(now-lastScheduleCheck>250){lastScheduleCheck=now;if(!player.playing&&!recorder.active&&!countdownUntil){const due=dueSchedules(schedules,Date.now())[0];if(due){const target=library.get(due.name);schedules[due.slot].fired=true;schedules[due.slot].enabled=false;save();if(target){loaded=target;play();}else announce('Scheduled recording is unavailable.');mark();}}}
+  if((prompt||countdownUntil||startupUntil>now||transitionUntil>now||player.playing||recorder.active)&&now-lastUiTime>100){lastUiTime=now;mark();}
+  if(dirty&&now-lastTick>=25){lastTick=now;dirty=false;drawMain(now);drawInspector();}
+  requestAnimationFrame(tick);
+}
+renderSchedules();drawMain(performance.now());drawInspector();requestAnimationFrame(tick);
+new ResizeObserver(() => {
+  const width=Math.min(640,$('screen-viewport').clientWidth);
+  $('screen').style.width=width+'px';$('screen').style.height=(width*.75)+'px';
+}).observe($('screen-viewport'));
+
+</script>
+</head>
+<body>
+  <header class="app-header"><a class="wordmark" href="./">Computer Control <span>b5</span></a><span class="header-note">HTML5 conversion · virtual hardware</span><button id="about-button" type="button">About</button></header>
+  <main>
+    <section class="program" aria-label="Original DOS program">
+      <div class="section-heading"><h1>Original program</h1><span>640 × 480 · VGA · CP437</span></div>
+      <div id="screen-viewport"><canvas id="screen" width="640" height="480" tabindex="0" aria-label="Computer Control DOS interface. Q W E R T Y U I toggle output bits. P plays, C records, S stops, G opens groups, D opens scheduler, O opens options, H opens help. Click to focus." role="application">Computer Control requires a browser with HTML5 canvas support.</canvas><div class="focus-caption">Click the screen to use the original keyboard controls</div></div>
+      <div class="program-controls">
+        <button id="play-button" type="button">▶ Play <kbd>P</kbd></button><button id="record-button" type="button">● Record <kbd>C</kbd></button><button id="stop-button" type="button">■ Stop <kbd>S</kbd></button><button id="home-button" type="button">Main screen</button>
+        <label class="speed-label">Speed <select id="speed"><option value="1">1×</option><option value="2">2×</option><option value="10">10×</option></select></label>
+      </div>
+      <div class="file-controls"><label for="sample">Original examples</label><select id="sample"><option>eg1.rec</option><option>eg2.rec</option><option>eg3.rec</option></select><button id="load-sample" type="button">Load</button><button id="import-recording" type="button">Open .rec</button><button id="export-recording" type="button">Save .rec</button><button id="edit-sequence" type="button">Edit sequence</button></div>
+      <div id="transport-status" role="status" aria-live="polite">Ready. Select an example or open a recording.</div>
+      <div class="output-access" aria-label="Output keyboard controls" id="output-keys"></div>
+      <div class="support-controls"><button id="groups-button" type="button">Groups <kbd>G</kbd></button><button id="schedule-button" type="button">Scheduler <kbd>D</kbd></button><button id="options-button" type="button">Options <kbd>O</kbd></button><button id="help-button" type="button">Help <kbd>H</kbd></button></div>
+      <p class="screen-note">The screen retains its original pixel layout. On smaller displays, only its viewing scale changes.</p>
+    </section>
+    <aside class="inspector" aria-label="Emulated parallel port">
+      <div class="section-heading"><h2>Parallel port</h2><select id="port-select" aria-label="Emulated LPT port"><option value="0">LPT1 · 0x378</option><option value="1">LPT2 · 0x278</option><option value="2">LPT3 · 0x3BC</option></select></div>
+      <div class="connector-label">DB-25 female · looking into the PC socket</div>
+      <div class="connector" aria-label="DB-25 parallel connector"><div class="pin-row" id="pins-top"></div><div class="pin-row" id="pins-bottom"></div></div>
+      <div class="pin-legend"><span><i class="high-dot"></i>HIGH</span><span><i class="low-dot"></i>LOW</span><span><i class="ground-dot"></i>Ground</span></div>
+      <div id="selected-pin" role="status">Select a pin to inspect its signal.</div>
+      <div class="registers"><div>DATA <span id="data-address">0x378</span><output id="data-register">0x00</output></div><div>STATUS <span id="status-address">0x379</span><output id="status-register">0x78</output></div><div>CONTROL <span id="control-address">0x37A</span><output id="control-register">0x04</output></div></div>
+      <form id="byte-form" class="byte-form"><label for="output-byte">Output byte</label><input id="output-byte" type="number" min="0" max="255" step="1" value="0" required><button type="submit">Set</button><output id="binary-byte">00000000</output></form>
+      <h3>Output signals</h3><div class="signal-list" id="output-signals"></div>
+      <h3>Virtual input switches</h3><div class="input-switches" id="input-switches"></div>
+      <p class="inspector-note">A closed switch pulls its pin LOW. The original input monitor reads pins 11, 10, 12, 13, 17, 16, 14, 1. Pin 15 is visible here and ignored by that monitor.</p>
+      <details class="groups-details"><summary>Group banks · keys 0–9</summary><div id="group-banks"></div><div class="small-actions"><button id="import-groups" type="button">Open .gro</button><button id="export-groups" type="button">Save .gro</button></div></details>
+    </aside>
+  </main>
+  <footer>Original program by Daniel Vincent · Browser port preserves the supplied source and artwork. <span>No physical port is connected.</span></footer>
+  <input id="recording-file" type="file" accept=".rec,.seq,.txt" hidden><input id="groups-file" type="file" accept=".gro,.txt" hidden>
+  <dialog id="sequence-dialog"><form method="dialog" class="dialog-top"><h2>Recorded sequence</h2><button aria-label="Close sequence editor">×</button></form><form id="sequence-form"><label for="sequence-name">File name</label><input id="sequence-name" value="sequence.rec" maxlength="100" required><label for="sequence-text">Output byte, delay in seconds</label><textarea id="sequence-text" rows="11" spellcheck="false" required></textarea><p class="dialog-hint">Each row sets the output, then waits. A final delay of 888 stops playback.</p><div id="sequence-error" role="alert"></div><button type="submit" class="primary">Use sequence</button></form></dialog>
+  <dialog id="schedule-dialog"><form method="dialog" class="dialog-top"><h2>Scheduler</h2><button aria-label="Close scheduler">×</button></form><p class="dialog-hint">Runs while this page is open. A missed time during this session runs when the page becomes active again. Saved schedules from previous sessions remain paused until re-enabled.</p><div id="schedule-list"></div><form id="schedule-form"><label for="schedule-time">Date and time</label><input id="schedule-time" type="datetime-local" step="1" required><label for="schedule-recording">Recording</label><select id="schedule-recording" required></select><button class="primary" type="submit">Add schedule</button><div id="schedule-error" role="alert"></div></form></dialog>
+  <dialog id="about-dialog"><form method="dialog" class="dialog-top"><h2>Computer Control beta 5</h2><button aria-label="Close about">×</button></form><p>A browser conversion of Daniel Vincent’s QBASIC parallel-port controller. The program is drawn into a fixed 640×480 framebuffer with 8×16 IBM VGA bitmap characters, the original CP437 box drawing, and the supplied screen text.</p><p>The pinout emulates digital logic, including inverted status/control bits. Its control pins model released, open-collector lines. This is a software simulation.</p><p>Files, group banks, settings, and recordings stay in this browser. Export .rec and .gro files to keep a separate copy.</p><p>The supplied source differs from the released executable. Register initialization, group-bank 4, timing, configuration saving, and scheduler-slot errors are corrected in the port.</p><p>DOS executable plug-ins are outside the browser conversion; the Plugins screen supplies a virtual input/output demonstration.</p><p><a href="data:image/png;base64,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" download="original-screen.png">Original screenshot</a> · <a href="data:image/png;base64,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" download="original-wiring.png">Original wiring diagram</a> · <a href="https://github.com/viler-int10h/vga-text-mode-fonts" target="_blank" rel="noopener">VGA font archive by VileR</a></p></dialog>
+  <noscript>This conversion needs JavaScript enabled.</noscript>
+</body>
+</html>
