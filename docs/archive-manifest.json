@@ -1,0 +1,293 @@
+{
+  "description": "Original files imported one file per commit using their saved filesystem modification timestamps. This is reconstructed archival history, not recovered Git history.",
+  "timestamp_basis": "The current filesystem modification timestamp, stored in UTC; no assumption is made about the original machine timezone.",
+  "files": [
+    {
+      "path": "CC beta 5 stuff/Program/eg2.rec",
+      "modified_utc": "1999-06-25T22:43:40+00:00",
+      "modified_unix_ns": 930350620000000000,
+      "size_bytes": 938,
+      "sha256": "432e2f7cbe43f0c36a371218234943a7d87b9546216df011df3929d4c4ce171c"
+    },
+    {
+      "path": "CC beta 5 stuff/Program/data1.dcc",
+      "modified_utc": "1999-07-06T01:27:08+00:00",
+      "modified_unix_ns": 931224428000000000,
+      "size_bytes": 153718,
+      "sha256": "080f487344124c24526fc9bef49ec482a9866ccda136d9aec139370977456e4d"
+    },
+    {
+      "path": "CC beta 5 stuff/code/PLUGIN1.BAS",
+      "modified_utc": "1999-08-05T06:04:54+00:00",
+      "modified_unix_ns": 933833094000000000,
+      "size_bytes": 71411,
+      "sha256": "e9702a45f51ac18547d52704fd23fcb35f31f692bdfcf8851bbead50cd422e94"
+    },
+    {
+      "path": "CC beta 5 stuff/Program/PLUGIN.EXE",
+      "modified_utc": "1999-08-06T00:41:22+00:00",
+      "modified_unix_ns": 933900082000000000,
+      "size_bytes": 71730,
+      "sha256": "34543458c7a6a2ed48471c514f25eb22df4dcb1b0ba1493e7abe86fd7ceb1392"
+    },
+    {
+      "path": "CC beta 5 stuff/code/COMPCON2.BAS",
+      "modified_utc": "1999-08-19T02:01:18+00:00",
+      "modified_unix_ns": 935028078000000000,
+      "size_bytes": 68120,
+      "sha256": "d4793d74bb20089c2b0c8483717e3c173c95e9745bc519c9ce498e3e19b79be2"
+    },
+    {
+      "path": "CC beta 5 stuff/code/COMPCON.BAS",
+      "modified_utc": "1999-08-20T04:30:32+00:00",
+      "modified_unix_ns": 935123432000000000,
+      "size_bytes": 67511,
+      "sha256": "c378976ff96f46e93f21792670e4c597f65073671afeccfba16faf8e3700f134"
+    },
+    {
+      "path": "CC beta 5 stuff/code/PLUGIN.BAS",
+      "modified_utc": "1999-08-20T04:40:52+00:00",
+      "modified_unix_ns": 935124052000000000,
+      "size_bytes": 22159,
+      "sha256": "d3a5c7d2ea112d74d2ba89779ac381d17197789fa8e18df1e0f4e5d1a4c01e5d"
+    },
+    {
+      "path": "CC beta 5 stuff/code.zip",
+      "modified_utc": "1999-08-23T23:34:44+00:00",
+      "modified_unix_ns": 935451284000000000,
+      "size_bytes": 45746,
+      "sha256": "7fa72845d79dce1ebea0a7ed4bf60069605f38398ea1f978366e891350a3a896"
+    },
+    {
+      "path": "CC beta 5 stuff/Program/eg1.rec",
+      "modified_utc": "1999-09-02T22:32:30+00:00",
+      "modified_unix_ns": 936311550000000000,
+      "size_bytes": 1114,
+      "sha256": "a0971834cca9d751a7aa16a46341e11a3380db6be40003f507d8b3c337c14716"
+    },
+    {
+      "path": "CC beta 5 stuff/Program/eg3.rec",
+      "modified_utc": "1999-09-02T22:40:08+00:00",
+      "modified_unix_ns": 936312008000000000,
+      "size_bytes": 34,
+      "sha256": "046496e96881e2a8a7140b5bbdd33275fc381486fe9d46f184620c724f9e728a"
+    },
+    {
+      "path": "CC beta 5 stuff/Beta5.bmp",
+      "modified_utc": "1999-09-08T02:23:32+00:00",
+      "modified_unix_ns": 936757412000000000,
+      "size_bytes": 921654,
+      "sha256": "cf6b8948570f5f9cc1b982b19560dae2152489a368086db5364f89f3f2fc9d45"
+    },
+    {
+      "path": "CC beta 5 stuff/computer control reg reminder.mix",
+      "modified_utc": "1999-10-20T18:49:18+00:00",
+      "modified_unix_ns": 940445358000000000,
+      "size_bytes": 879616,
+      "sha256": "c0aac02f014bc9197fc611d54b521b1b383b580ba2a3f73ebdcecfc087c68841"
+    },
+    {
+      "path": "CC beta 5 stuff/computer control reg reminder.bmp",
+      "modified_utc": "1999-10-20T18:54:54+00:00",
+      "modified_unix_ns": 940445694000000000,
+      "size_bytes": 921654,
+      "sha256": "b32c2b039bb7cb824eef153641049c68ca34605ea75de32e322a0bb9196730bc"
+    },
+    {
+      "path": "CC beta 5 stuff/Program/data2.dcc",
+      "modified_utc": "1999-10-20T18:55:58+00:00",
+      "modified_unix_ns": 940445758000000000,
+      "size_bytes": 153718,
+      "sha256": "2bbae79289a767ac7a5bb31ab162337d8fd591093a5af2a95b93f1eb0adb0ebd"
+    },
+    {
+      "path": "CC beta 5 stuff/Program/Registration.txt",
+      "modified_utc": "1999-10-21T03:45:04+00:00",
+      "modified_unix_ns": 940477504000000000,
+      "size_bytes": 1381,
+      "sha256": "70cf0fb2c149a13135322b319893dd92e7a124a80b33243bf91c69b9e7fcfb62"
+    },
+    {
+      "path": "CC beta 5 stuff/Program/data3.dcc",
+      "modified_utc": "1999-10-21T04:06:48+00:00",
+      "modified_unix_ns": 940478808000000000,
+      "size_bytes": 9242,
+      "sha256": "0a0959034a4e72ee51efae1b3c49c232f98d760648dc10b058be45ab1a8992e0"
+    },
+    {
+      "path": "CC beta 5 stuff/Program/PLUGINS.CC",
+      "modified_utc": "1999-10-21T04:13:12+00:00",
+      "modified_unix_ns": 940479192000000000,
+      "size_bytes": 14,
+      "sha256": "2b5ad854c9446b9d656896d8fb8caba5ad4d9629e45026c0a1fd7b3facc5d36e"
+    },
+    {
+      "path": "CC beta 5 stuff/Program/COMPCON.EXE",
+      "modified_utc": "1999-10-21T04:18:52+00:00",
+      "modified_unix_ns": 940479532000000000,
+      "size_bytes": 139014,
+      "sha256": "b18b83fc1f7f26d196d176940c173dd7c4a79882f941fca66ef9993ae5e98c47"
+    },
+    {
+      "path": "CC beta 5 stuff/Computer_Control_b5.zip",
+      "modified_utc": "1999-10-21T04:46:20+00:00",
+      "modified_unix_ns": 940481180000000000,
+      "size_bytes": 119001,
+      "sha256": "b43ce4c5ac1331443b70e1fab4d01fb55056c711f075d936323b17f55fb9f6a8"
+    },
+    {
+      "path": "CC beta 5 stuff/Program/START.CCL",
+      "modified_utc": "1999-10-21T23:27:28+00:00",
+      "modified_unix_ns": 940548448000000000,
+      "size_bytes": 157,
+      "sha256": "b5b2882d7b8753e79774a8adf90e3632a96a1a05601c5abf4c717e17c9f685fc"
+    },
+    {
+      "path": "CC beta 5 stuff/CControl_b5.exe",
+      "modified_utc": "1999-10-21T23:36:10+00:00",
+      "modified_unix_ns": 940548970000000000,
+      "size_bytes": 266307,
+      "sha256": "27395b71fd5500ba7d25a8741c73357e9c91319fb62a501356e00cd1aa7353a6"
+    },
+    {
+      "path": "CC beta 5 stuff/Install.iit",
+      "modified_utc": "1999-10-21T23:36:18+00:00",
+      "modified_unix_ns": 940548978000000000,
+      "size_bytes": 4445,
+      "sha256": "457d75007e702b64276c182d9f18a0deedbbaa299d40863e418d9339fb8af604"
+    },
+    {
+      "path": "CC beta 5 stuff/buttons.bmp",
+      "modified_utc": "1999-10-22T17:54:08+00:00",
+      "modified_unix_ns": 940614848000000000,
+      "size_bytes": 6854,
+      "sha256": "35c31d0046affd633200b39296c1709d48e49ef4fc52b181b6cfeca02b4784b5"
+    },
+    {
+      "path": "CC beta 5 stuff/Playbar.rd4",
+      "modified_utc": "1999-11-18T00:59:28+00:00",
+      "modified_unix_ns": 942886768000000000,
+      "size_bytes": 20246,
+      "sha256": "cd0f503cecf3fd9a8c5e6f3c4813866bcec2466f65883cb5b46de49cba58888d"
+    },
+    {
+      "path": "CC beta 5 stuff/playbar.dxf",
+      "modified_utc": "1999-11-18T01:12:30+00:00",
+      "modified_unix_ns": 942887550000000000,
+      "size_bytes": 9102,
+      "sha256": "a18adfad98d9ae4677ef0c0eedc03431d64c8ce5b22e3311cf4d31ae5e9a0a73"
+    },
+    {
+      "path": "CC beta 5 stuff/Intro.gif",
+      "modified_utc": "1999-11-20T05:16:58+00:00",
+      "modified_unix_ns": 943075018000000000,
+      "size_bytes": 357027,
+      "sha256": "f14748d63e8d99f06e5a878116b59567821ebf6ae431f43766558f14213b945d"
+    },
+    {
+      "path": "CC beta 5 stuff/Intro.m1v",
+      "modified_utc": "1999-11-20T05:42:56+00:00",
+      "modified_unix_ns": 943076576000000000,
+      "size_bytes": 211560,
+      "sha256": "b033f8233159e5d7207b416ac3abcdf7b97c5d46b7859e56797451e3b996d6ee"
+    },
+    {
+      "path": "CC beta 5 stuff/LPT recognition.exe",
+      "modified_utc": "2000-02-13T05:25:22+00:00",
+      "modified_unix_ns": 950419522000000000,
+      "size_bytes": 9033,
+      "sha256": "c36a818083fed05b60e564b0c8ecd4600a235c91976696afec127be4d8a9d386"
+    },
+    {
+      "path": "CC beta 5 stuff/CC place.txt",
+      "modified_utc": "2000-02-22T12:31:52+00:00",
+      "modified_unix_ns": 951222712000000000,
+      "size_bytes": 37,
+      "sha256": "e0e5629506b0a3a1071232766052fdd4a066fb47200de7210346e26916a4f016"
+    },
+    {
+      "path": "Poster/Title.gif",
+      "modified_utc": "2000-03-28T23:28:38+00:00",
+      "modified_unix_ns": 954286118000000000,
+      "size_bytes": 2084,
+      "sha256": "39fd64f9c2305adf6153b3c1ab82a7e2f3717d0abf922a114b0a55a38dd2240a"
+    },
+    {
+      "path": "CC beta 5 stuff/info.doc",
+      "modified_utc": "2000-04-05T03:31:38+00:00",
+      "modified_unix_ns": 954905498000000000,
+      "size_bytes": 20992,
+      "sha256": "b55a1951baf3600b1587985ec342fbe1a464ae7c7116f0ba5f5a419ab6221a7e"
+    },
+    {
+      "path": "Poster/Backup_of_circuit.gif",
+      "modified_utc": "2000-06-09T18:46:38+00:00",
+      "modified_unix_ns": 960576398000000000,
+      "size_bytes": 15495,
+      "sha256": "19762ff4d3103cc03965a5aa8fc79a53aa6b03abc69596029558aba22fe7f222"
+    },
+    {
+      "path": "Poster/light holder.spt",
+      "modified_utc": "2000-06-09T18:51:26+00:00",
+      "modified_unix_ns": 960576686000000000,
+      "size_bytes": 15614,
+      "sha256": "4b701b439e2b4779e6a661effc90c97aaf5f228c3d9317d29d3b83b08ea41652"
+    },
+    {
+      "path": "Poster/light holder.dxf",
+      "modified_utc": "2000-06-09T18:52:06+00:00",
+      "modified_unix_ns": 960576726000000000,
+      "size_bytes": 769548,
+      "sha256": "e86af6792fce8ff9ca62cedb847864ec05b5891f8b3dbf29a940f739fcd61f35"
+    },
+    {
+      "path": "Poster/Play Buttons.bmp",
+      "modified_utc": "2000-06-09T19:51:42+00:00",
+      "modified_unix_ns": 960580302000000000,
+      "size_bytes": 1620974,
+      "sha256": "14513ec6acb6897a63f558a3e625665591b01083a73e82d13641396552f39cd6"
+    },
+    {
+      "path": "Poster/programming.bmp",
+      "modified_utc": "2000-06-09T22:01:30+00:00",
+      "modified_unix_ns": 960588090000000000,
+      "size_bytes": 45662,
+      "sha256": "7a68e655bc012b48d043805dde9e8bf45b2afc4f185194c12bbee39f5b0432f1"
+    },
+    {
+      "path": "Poster/poster house v.bmp",
+      "modified_utc": "2000-06-09T22:11:42+00:00",
+      "modified_unix_ns": 960588702000000000,
+      "size_bytes": 1440054,
+      "sha256": "15297e09aa10d4a52df4ee26672120990b08613d43cbd281dd2a21b10d8b4b32"
+    },
+    {
+      "path": "Poster/light holder.bmp",
+      "modified_utc": "2000-06-09T22:22:12+00:00",
+      "modified_unix_ns": 960589332000000000,
+      "size_bytes": 324918,
+      "sha256": "95aa934736347971c66a6fca8e1313156cba1cb27211b55001f7026e957f7902"
+    },
+    {
+      "path": "Poster/PCB.bmp",
+      "modified_utc": "2000-06-09T22:32:02+00:00",
+      "modified_unix_ns": 960589922000000000,
+      "size_bytes": 411598,
+      "sha256": "054e7a08732aefd64cd3a91ba3f95b73b13c5a70f59e16b8b6d156507c3a44ca"
+    },
+    {
+      "path": "Poster/circuit.gif",
+      "modified_utc": "2000-06-09T22:32:38+00:00",
+      "modified_unix_ns": 960589958000000000,
+      "size_bytes": 15494,
+      "sha256": "a1e6083a866c14c7abcc6a48bcf1067f5bcbfed7dd95c6869f90d21acba073a7"
+    },
+    {
+      "path": "Poster/THE poster.bmp",
+      "modified_utc": "2000-12-19T23:27:46+00:00",
+      "modified_unix_ns": 977268466000000000,
+      "size_bytes": 23580054,
+      "sha256": "333b1e2796973ca14117eb43038770de68de4fd6a9720be03036338ba0c4673e"
+    }
+  ]
+}
